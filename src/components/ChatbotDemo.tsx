@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
-import { StreamingVoiceChat, useStreamingVoiceResponse } from "@/components/StreamingVoiceChat";
+import { RealtimeVoiceChat } from "@/components/RealtimeVoiceChat";
 
 interface Message {
   text: string;
@@ -13,18 +12,30 @@ interface Message {
 export const ChatbotDemo = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "السلام علیکم! I'm ALIF Tutor, powered by Traversaal.ai. Ask me anything in English or Urdu!",
+      text: "السلام علیکم! I'm ALIF Tutor, powered by Traversaal.ai. Ask me anything in English or Urdu, or use voice chat for real-time conversation!",
       isUser: false,
       language: 'en'
     }
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [isAudioMode, setIsAudioMode] = useState(false);
-  const { playResponseAudio } = useStreamingVoiceResponse();
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
 
-  const handleSpeechResult = (text: string) => {
-    setInput(text);
+  const handleVoiceMessage = (event: any) => {
+    console.log('Voice event received in demo:', event);
+    
+    // Handle different types of voice events
+    if (event.type === 'conversation.item.created' && event.item.content) {
+      const content = event.item.content.find((c: any) => c.type === 'text');
+      if (content) {
+        const newMessage: Message = {
+          text: content.text,
+          isUser: event.item.role === 'user',
+          language: 'en'
+        };
+        setMessages(prev => [...prev, newMessage]);
+      }
+    }
   };
 
   const handleSend = async () => {
@@ -129,9 +140,9 @@ export const ChatbotDemo = () => {
         });
 
         // Play audio response if in audio mode
-        if (isAudioMode) {
-          await playResponseAudio(fullResponse);
-        }
+        // if (isAudioMode) {
+        //   await playResponseAudio(fullResponse);
+        // }
       } else {
         // If no response was received, update with error message
         setMessages(prev => {
@@ -222,37 +233,37 @@ export const ChatbotDemo = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && !isTyping && handleSend()}
+            onKeyPress={(e) => e.key === 'Enter' && !isTyping && !isVoiceActive && handleSend()}
             placeholder="Ask me anything in English or Urdu..."
             className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
-            disabled={isTyping}
+            disabled={isTyping || isVoiceActive}
           />
           <Button
             onClick={handleSend}
-            disabled={isTyping || !input.trim()}
+            disabled={isTyping || !input.trim() || isVoiceActive}
             className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
           </Button>
         </div>
 
-        <StreamingVoiceChat
-          onSpeechResult={handleSpeechResult}
-          isAudioMode={isAudioMode}
-          setIsAudioMode={setIsAudioMode}
+        <RealtimeVoiceChat
+          onMessage={handleVoiceMessage}
+          isActive={isVoiceActive}
+          setIsActive={setIsVoiceActive}
         />
 
-        {isAudioMode && (
+        {isVoiceActive && (
           <div className="text-center">
             <p className="text-xs text-emerald-600 font-medium">
-              🎤 Voice Mode Active - Responses will be spoken aloud
+              🎤 Real-time Voice Chat Active - Speak naturally for instant responses
             </p>
           </div>
         )}
       </div>
 
       <p className="text-xs text-gray-500 text-center mt-3">
-        Try: "Explain photosynthesis" or "urdu mein samjhao" or use voice input
+        Try: "Explain photosynthesis" or "urdu mein samjhao" or use real-time voice chat
       </p>
     </div>
   );

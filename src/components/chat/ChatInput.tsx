@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
-import { StreamingVoiceChat, useStreamingVoiceResponse } from "@/components/StreamingVoiceChat";
+import { RealtimeVoiceChat } from "@/components/RealtimeVoiceChat";
 
 interface Message {
   id: string;
@@ -20,8 +20,7 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatInputProps) => {
-  const [isAudioMode, setIsAudioMode] = useState(false);
-  const { playResponseAudio } = useStreamingVoiceResponse();
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -30,13 +29,18 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatI
     }
   };
 
-  const handleSpeechResult = (text: string) => {
-    setInput(text);
+  const handleVoiceMessage = (event: any) => {
+    console.log('Voice event received:', event);
+    // Handle different types of voice events from OpenAI
+    if (event.type === 'conversation.item.created' && event.item.content) {
+      // Handle transcribed text or AI responses
+      const content = event.item.content.find((c: any) => c.type === 'text');
+      if (content && event.item.role === 'assistant') {
+        console.log('AI response:', content.text);
+      }
+    }
   };
 
-  // Play audio for the last AI response when it's completed
-  const lastAIMessage = messages.filter(m => !m.is_user).pop();
-  
   return (
     <div className="bg-white border-t p-6">
       <div className="space-y-4">
@@ -48,27 +52,27 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatI
             placeholder="اردو یا انگریزی میں سوال پوچھیں... Ask in Urdu or English..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none"
             rows={1}
-            disabled={isTyping}
+            disabled={isTyping || isVoiceActive}
           />
           <Button
             onClick={onSend}
-            disabled={isTyping || !input.trim()}
+            disabled={isTyping || !input.trim() || isVoiceActive}
             className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
           </Button>
         </div>
 
-        <StreamingVoiceChat
-          onSpeechResult={handleSpeechResult}
-          isAudioMode={isAudioMode}
-          setIsAudioMode={setIsAudioMode}
+        <RealtimeVoiceChat
+          onMessage={handleVoiceMessage}
+          isActive={isVoiceActive}
+          setIsActive={setIsVoiceActive}
         />
 
-        {isAudioMode && (
+        {isVoiceActive && (
           <div className="text-center">
             <p className="text-xs text-emerald-600 font-medium">
-              🎤 Voice Mode Active - Responses will be spoken aloud
+              🎤 Real-time Voice Chat Active - Speak naturally for instant AI responses
             </p>
           </div>
         )}
