@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
-import { AudioControls } from "@/components/AudioControls";
+import { StreamingVoiceChat, useStreamingVoiceResponse } from "@/components/StreamingVoiceChat";
 
 interface Message {
   text: string;
@@ -19,6 +20,8 @@ export const ChatbotDemo = () => {
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isAudioMode, setIsAudioMode] = useState(false);
+  const { playResponseAudio } = useStreamingVoiceResponse();
 
   const handleSpeechResult = (text: string) => {
     setInput(text);
@@ -124,6 +127,11 @@ export const ChatbotDemo = () => {
           }
           return newMessages;
         });
+
+        // Play audio response if in audio mode
+        if (isAudioMode) {
+          await playResponseAudio(fullResponse);
+        }
       } else {
         // If no response was received, update with error message
         setMessages(prev => {
@@ -228,15 +236,23 @@ export const ChatbotDemo = () => {
           </Button>
         </div>
 
-        <AudioControls
+        <StreamingVoiceChat
           onSpeechResult={handleSpeechResult}
-          lastAIResponse={messages.filter(m => !m.isUser).pop()?.text}
-          disabled={isTyping}
+          isAudioMode={isAudioMode}
+          setIsAudioMode={setIsAudioMode}
         />
+
+        {isAudioMode && (
+          <div className="text-center">
+            <p className="text-xs text-emerald-600 font-medium">
+              🎤 Voice Mode Active - Responses will be spoken aloud
+            </p>
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-gray-500 text-center mt-3">
-        Try: "Explain photosynthesis" or "urdu mein samjhao" or "help with math"
+        Try: "Explain photosynthesis" or "urdu mein samjhao" or use voice input
       </p>
     </div>
   );

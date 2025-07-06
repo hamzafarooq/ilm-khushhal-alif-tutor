@@ -18,47 +18,42 @@ serve(async (req) => {
     console.log('Request body received:', { 
       hasText: !!requestBody.text, 
       textLength: requestBody.text?.length || 0,
-      voiceId: requestBody.voiceId 
+      voice: requestBody.voice 
     })
 
-    const { text, voiceId = 'pNInz6obpgDQGcFmaJgB' } = requestBody
+    const { text, voice = 'alloy' } = requestBody
 
     if (!text) {
       console.error('No text provided in request')
       throw new Error('Text is required')
     }
 
-    const apiKey = Deno.env.get('ELEVENLABS_API_KEY')
-    console.log('API key check:', { hasApiKey: !!apiKey, keyPrefix: apiKey?.substring(0, 8) + '...' })
+    const apiKey = Deno.env.get('OPENAI_API_KEY')
+    console.log('API key check:', { hasApiKey: !!apiKey })
     
     if (!apiKey) {
-      console.error('ElevenLabs API key not found in environment variables')
-      throw new Error('ElevenLabs API key not configured')
+      console.error('OpenAI API key not found in environment variables')
+      throw new Error('OpenAI API key not configured')
     }
 
-    console.log('Making request to ElevenLabs API with voice:', voiceId)
+    console.log('Making request to OpenAI TTS API with voice:', voice)
 
-    // Call ElevenLabs Text-to-Speech API
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    // Call OpenAI Text-to-Speech API
+    const response = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
       headers: {
-        'xi-api-key': apiKey,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'Accept': 'audio/mpeg'
       },
       body: JSON.stringify({
-        text: text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.5,
-          style: 0.0,
-          use_speaker_boost: true
-        }
+        model: 'tts-1',
+        input: text,
+        voice: voice,
+        response_format: 'mp3',
       }),
     })
 
-    console.log('ElevenLabs API response:', {
+    console.log('OpenAI API response:', {
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries())
@@ -66,22 +61,22 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('ElevenLabs API error details:', {
+      console.error('OpenAI API error details:', {
         status: response.status,
         statusText: response.statusText,
         errorBody: errorText
       })
       
       if (response.status === 401) {
-        throw new Error('Invalid ElevenLabs API key')
-      } else if (response.status === 422) {
-        throw new Error('Invalid voice ID or request parameters')
+        throw new Error('Invalid OpenAI API key')
+      } else if (response.status === 400) {
+        throw new Error('Invalid request parameters')
       } else {
-        throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`)
+        throw new Error(`OpenAI API error: ${response.status} - ${errorText}`)
       }
     }
 
-    console.log('Successfully received audio from ElevenLabs')
+    console.log('Successfully received audio from OpenAI')
 
     // Convert audio buffer to base64
     const arrayBuffer = await response.arrayBuffer()

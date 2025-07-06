@@ -19,10 +19,10 @@ export const convertSpeechToText = async (audioBlob: Blob): Promise<string> => {
   }
 };
 
-export const convertTextToSpeech = async (text: string, voiceId: string = 'kD4dEWy2fbcyXlge6iHh'): Promise<string> => {
+export const convertTextToSpeech = async (text: string, voice: string = 'alloy'): Promise<string> => {
   try {
     const { data, error } = await supabase.functions.invoke('text-to-speech', {
-      body: { text, voiceId }
+      body: { text, voice }
     });
 
     if (error) throw error;

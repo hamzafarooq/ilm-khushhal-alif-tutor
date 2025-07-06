@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
-import { AudioControls } from "@/components/AudioControls";
+import { StreamingVoiceChat, useStreamingVoiceResponse } from "@/components/StreamingVoiceChat";
 
 interface Message {
   id: string;
@@ -20,6 +20,9 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatInputProps) => {
+  const [isAudioMode, setIsAudioMode] = useState(false);
+  const { playResponseAudio } = useStreamingVoiceResponse();
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -31,6 +34,9 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatI
     setInput(text);
   };
 
+  // Play audio for the last AI response when it's completed
+  const lastAIMessage = messages.filter(m => !m.is_user).pop();
+  
   return (
     <div className="bg-white border-t p-6">
       <div className="space-y-4">
@@ -53,11 +59,19 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatI
           </Button>
         </div>
 
-        <AudioControls
+        <StreamingVoiceChat
           onSpeechResult={handleSpeechResult}
-          lastAIResponse={messages.filter(m => !m.is_user).pop()?.content}
-          disabled={isTyping}
+          isAudioMode={isAudioMode}
+          setIsAudioMode={setIsAudioMode}
         />
+
+        {isAudioMode && (
+          <div className="text-center">
+            <p className="text-xs text-emerald-600 font-medium">
+              🎤 Voice Mode Active - Responses will be spoken aloud
+            </p>
+          </div>
+        )}
       </div>
       
       <p className="text-xs text-gray-500 text-center mt-3">
