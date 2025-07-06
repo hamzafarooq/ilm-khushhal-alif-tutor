@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
@@ -16,6 +15,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [currentResponse, setCurrentResponse] = useState('');
+  const [accumulatedText, setAccumulatedText] = useState('');
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const dcRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -75,18 +75,25 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
         const event = JSON.parse(e.data);
         console.log('Received event from OpenAI:', event);
         
-        // Handle streaming text responses
+        // Handle streaming text responses - accumulate properly
         if (event.type === 'response.audio_transcript.delta') {
-          const newText = currentResponse + (event.delta || '');
-          setCurrentResponse(newText);
-          onTextUpdate?.(newText, false);
+          const deltaText = event.delta || '';
+          setAccumulatedText(prev => {
+            const newText = prev + deltaText;
+            console.log('Accumulated text so far:', newText);
+            onTextUpdate?.(newText, false);
+            setCurrentResponse(newText);
+            return newText;
+          });
         } else if (event.type === 'response.audio_transcript.done') {
-          console.log('Audio transcript complete:', currentResponse);
-          onTextUpdate?.(currentResponse, true);
+          console.log('Audio transcript complete:', accumulatedText);
+          onTextUpdate?.(accumulatedText, true);
           setCurrentResponse('');
+          setAccumulatedText('');
         } else if (event.type === 'response.done') {
           console.log('Response complete');
           setCurrentResponse('');
+          setAccumulatedText('');
         } else if (event.type === 'conversation.item.created' && event.item?.content) {
           // Handle text content
           const textContent = event.item.content.find((c: any) => c.type === 'text');
@@ -172,6 +179,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
     setIsConnected(false);
     setIsActive(false);
     setCurrentResponse('');
+    setAccumulatedText('');
     
     toast({
       title: "Disconnected",
