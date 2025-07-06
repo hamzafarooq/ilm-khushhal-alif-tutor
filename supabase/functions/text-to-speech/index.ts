@@ -1,4 +1,5 @@
 
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -20,7 +21,7 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    const apiKey = Deno.env.get('elevenlab_api_key')
+    const apiKey = Deno.env.get('ELEVENLABS_API_KEY')
     if (!apiKey) {
       console.error('ElevenLabs API key not found')
       throw new Error('API key not configured')
@@ -78,3 +79,4 @@ serve(async (req) => {
     )
   }
 })
+
