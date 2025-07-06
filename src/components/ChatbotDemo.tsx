@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   text: string;
@@ -12,7 +13,7 @@ interface Message {
 export const ChatbotDemo = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "السلام علیکم! I'm ALIF, your AI tutor. Ask me anything in English or Urdu!",
+      text: "السلام علیکم! I'm ALIF (الف), your AI tutor powered by Traversaal.ai. Ask me anything in English or Urdu!",
       isUser: false,
       language: 'en'
     }
@@ -20,27 +21,7 @@ export const ChatbotDemo = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  // Predefined responses for demo purposes
-  const demoResponses: Record<string, { text: string; language: 'en' | 'ur' }> = {
-    "photosynthesis": {
-      text: "Photosynthesis (فوٹو سنتھیسس) is how plants make their food! Just like how we eat rice and roti for energy, plants use sunlight, water, and carbon dioxide to make glucose. It's like cooking - but plants use the sun as their stove! 🌱☀️",
-      language: 'en'
-    },
-    "urdu mein samjhao": {
-      text: "بالکل! میں آپ کو اردو میں سمجھا سکتا ہوں۔ کیا آپ کو ریاضی، سائنس، یا انگریزی میں مدد چاہیے؟ میں پاکستانی نصاب کے مطابق آپ کی رہنمائی کر سکتا ہوں۔",
-      language: 'ur'
-    },
-    "math help": {
-      text: "I'd love to help with math! مجھے ریاضی پڑھانے میں بہت مزہ آتا ہے۔ Whether it's addition (جمع), subtraction (تفریق), or multiplication (ضرب), I can explain using examples from cricket scores or counting mangoes! What topic do you need help with?",
-      language: 'en'
-    },
-    "default": {
-      text: "That's a great question! میں سمجھ گیا ہوں۔ As your AI tutor, I can help you with any subject using examples from Pakistani culture. Try asking about math, science, or any school topic!",
-      language: 'en'
-    }
-  };
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -50,31 +31,44 @@ export const ChatbotDemo = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput("");
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const inputLower = input.toLowerCase();
-      let response = demoResponses.default;
+    try {
+      console.log('Sending message to ALIF:', currentInput);
+      
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { message: currentInput }
+      });
 
-      if (inputLower.includes("photosynthesis")) {
-        response = demoResponses.photosynthesis;
-      } else if (inputLower.includes("urdu") || inputLower.includes("اردو")) {
-        response = demoResponses["urdu mein samjhao"];
-      } else if (inputLower.includes("math") || inputLower.includes("ریاضی")) {
-        response = demoResponses["math help"];
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
       }
 
+      console.log('Received response from ALIF:', data);
+
       const aiMessage: Message = {
-        text: response.text,
+        text: data.message || "Sorry, I couldn't process that. Please try again!",
         isUser: false,
-        language: response.language
+        language: 'en'
       };
 
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error calling ALIF:', error);
+      
+      const errorMessage: Message = {
+        text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        isUser: false,
+        language: 'en'
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -84,7 +78,7 @@ export const ChatbotDemo = () => {
           <MessageSquare className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900">ALIF Tutor</h3>
+          <h3 className="font-bold text-gray-900">ALIF Tutor (الف)</h3>
           <p className="text-xs text-gray-500">Powered by Traversaal.ai</p>
         </div>
         <div className="ml-auto">
@@ -132,20 +126,22 @@ export const ChatbotDemo = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyPress={(e) => e.key === 'Enter' && !isTyping && handleSend()}
           placeholder="Ask me anything in English or Urdu..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+          disabled={isTyping}
         />
         <Button
           onClick={handleSend}
-          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl"
+          disabled={isTyping || !input.trim()}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl disabled:opacity-50"
         >
           <Send className="w-4 h-4" />
         </Button>
       </div>
 
       <p className="text-xs text-gray-500 text-center mt-3">
-        Try: "Explain photosynthesis" or "urdu mein samjhao" or "math help"
+        Try: "Explain photosynthesis" or "urdu mein samjhao" or "help with math"
       </p>
     </div>
   );
