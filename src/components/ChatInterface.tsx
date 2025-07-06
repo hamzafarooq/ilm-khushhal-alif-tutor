@@ -2,6 +2,7 @@
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { MessageList } from "@/components/chat/MessageList";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { SampleQuestions } from "@/components/SampleQuestions";
 import { useChat } from "@/hooks/useChat";
 
 interface ChatInterfaceProps {
@@ -22,9 +23,18 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
     handleStreamingText
   } = useChat(userId, threadId, onThreadCreated);
 
+  const handleSampleQuestionSelect = (question: string) => {
+    setInput(question);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <ChatHeader />
+      
+      <SampleQuestions 
+        onQuestionSelect={handleSampleQuestionSelect}
+        isVisible={messages.length === 0 && !currentResponse}
+      />
       
       <MessageList 
         messages={messages}

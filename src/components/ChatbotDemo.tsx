@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Send } from "lucide-react";
+import { MessageSquare, Send, BookOpen, Calculator, Globe } from "lucide-react";
 import { RealtimeVoiceChat } from "@/components/RealtimeVoiceChat";
 
 interface Message {
@@ -22,6 +22,13 @@ export const ChatbotDemo = () => {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [streamingText, setStreamingText] = useState('');
   const [accumulatedVoiceResponse, setAccumulatedVoiceResponse] = useState('');
+
+  const sampleQuestions = [
+    { icon: <Calculator className="w-3 h-3" />, text: "Solve: 15 + 27" },
+    { icon: <BookOpen className="w-3 h-3" />, text: "اردو میں سلام کیسے کہتے ہیں؟" },
+    { icon: <Globe className="w-3 h-3" />, text: "What is gravity?" },
+    { icon: <MessageSquare className="w-3 h-3" />, text: "Pakistan کا دارالحکومت کیا ہے؟" }
+  ];
 
   const handleVoiceMessage = (event: any) => {
     console.log('Voice event received in demo:', event);
@@ -258,6 +265,31 @@ export const ChatbotDemo = () => {
       </div>
 
       <div className="space-y-3">
+        {/* Sample Questions */}
+        {messages.length <= 1 && !isTyping && !isVoiceActive && (
+          <div className="mb-3">
+            <p className="text-xs text-gray-600 mb-2 text-center">Try these questions:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {sampleQuestions.map((question, index) => (
+                <Button
+                  key={index}
+                  onClick={() => setInput(question.text)}
+                  variant="outline"
+                  size="sm"
+                  className="h-auto p-2 text-xs hover:bg-emerald-50 hover:border-emerald-300"
+                >
+                  <div className="flex items-center space-x-1">
+                    <div className="text-emerald-600">
+                      {question.icon}
+                    </div>
+                    <span className="truncate text-left">{question.text.length > 20 ? question.text.substring(0, 20) + '...' : question.text}</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex space-x-2">
           <input
             type="text"
