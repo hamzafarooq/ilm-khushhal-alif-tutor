@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
@@ -20,6 +21,7 @@ export const ChatbotDemo = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
 
   const handleVoiceMessage = (event: any) => {
     console.log('Voice event received in demo:', event);
@@ -35,6 +37,22 @@ export const ChatbotDemo = () => {
         };
         setMessages(prev => [...prev, newMessage]);
       }
+    }
+  };
+
+  const handleStreamingText = (text: string, isComplete: boolean) => {
+    if (isComplete) {
+      // Add the complete message to the messages list
+      const newMessage: Message = {
+        text: text,
+        isUser: false,
+        language: 'en'
+      };
+      setMessages(prev => [...prev, newMessage]);
+      setStreamingText('');
+    } else {
+      // Update the streaming text
+      setStreamingText(text);
     }
   };
 
@@ -138,11 +156,6 @@ export const ChatbotDemo = () => {
           }
           return newMessages;
         });
-
-        // Play audio response if in audio mode
-        // if (isAudioMode) {
-        //   await playResponseAudio(fullResponse);
-        // }
       } else {
         // If no response was received, update with error message
         setMessages(prev => {
@@ -213,6 +226,18 @@ export const ChatbotDemo = () => {
             </div>
           </div>
         ))}
+
+        {/* Show streaming text from voice chat */}
+        {streamingText && (
+          <div className="flex justify-start">
+            <div className="max-w-xs px-4 py-2 rounded-2xl bg-blue-50 text-gray-800 shadow-sm border border-blue-200">
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mt-1"></div>
+                <p className="text-sm leading-relaxed">{streamingText}</p>
+              </div>
+            </div>
+          </div>
+        )}
         
         {isTyping && (
           <div className="flex justify-start">
@@ -251,6 +276,7 @@ export const ChatbotDemo = () => {
           onMessage={handleVoiceMessage}
           isActive={isVoiceActive}
           setIsActive={setIsVoiceActive}
+          onTextUpdate={handleStreamingText}
         />
 
         {isVoiceActive && (

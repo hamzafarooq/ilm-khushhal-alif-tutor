@@ -17,9 +17,10 @@ interface ChatInputProps {
   onSend: () => void;
   isTyping: boolean;
   messages: Message[];
+  onStreamingText?: (text: string, isComplete: boolean) => void;
 }
 
-export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatInputProps) => {
+export const ChatInput = ({ input, setInput, onSend, isTyping, messages, onStreamingText }: ChatInputProps) => {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -39,6 +40,10 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatI
         console.log('AI response:', content.text);
       }
     }
+  };
+
+  const handleTextUpdate = (text: string, isComplete: boolean) => {
+    onStreamingText?.(text, isComplete);
   };
 
   return (
@@ -67,6 +72,7 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages }: ChatI
           onMessage={handleVoiceMessage}
           isActive={isVoiceActive}
           setIsActive={setIsVoiceActive}
+          onTextUpdate={handleTextUpdate}
         />
 
         {isVoiceActive && (

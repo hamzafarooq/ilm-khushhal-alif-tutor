@@ -9,11 +9,13 @@ interface RealtimeVoiceChatProps {
   onMessage?: (message: any) => void;
   isActive: boolean;
   setIsActive: (active: boolean) => void;
+  onTextUpdate?: (text: string, isComplete: boolean) => void;
 }
 
-export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive }: RealtimeVoiceChatProps) => {
+export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpdate }: RealtimeVoiceChatProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [currentResponse, setCurrentResponse] = useState('');
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const dcRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -72,6 +74,27 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive }: Realtime
       dc.addEventListener("message", (e) => {
         const event = JSON.parse(e.data);
         console.log('Received event from OpenAI:', event);
+        
+        // Handle streaming text responses
+        if (event.type === 'response.audio_transcript.delta') {
+          const newText = currentResponse + (event.delta || '');
+          setCurrentResponse(newText);
+          onTextUpdate?.(newText, false);
+        } else if (event.type === 'response.audio_transcript.done') {
+          console.log('Audio transcript complete:', currentResponse);
+          onTextUpdate?.(currentResponse, true);
+          setCurrentResponse('');
+        } else if (event.type === 'response.done') {
+          console.log('Response complete');
+          setCurrentResponse('');
+        } else if (event.type === 'conversation.item.created' && event.item?.content) {
+          // Handle text content
+          const textContent = event.item.content.find((c: any) => c.type === 'text');
+          if (textContent && event.item.role === 'assistant') {
+            onTextUpdate?.(textContent.text, true);
+          }
+        }
+        
         onMessage?.(event);
       });
 
@@ -148,6 +171,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive }: Realtime
     
     setIsConnected(false);
     setIsActive(false);
+    setCurrentResponse('');
     
     toast({
       title: "Disconnected",
@@ -192,24 +216,39 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive }: Realtime
   }, []);
 
   return (
-    <div className="flex items-center space-x-3">
-      <Button
-        onClick={handleToggle}
-        disabled={isConnecting}
-        variant={isConnected ? "destructive" : isActive ? "default" : "outline"}
-        size="sm"
-        className="flex items-center space-x-2"
-      >
-        {isConnected ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-        <span className="text-xs">
-          {isConnecting ? 'Connecting...' : isConnected ? 'End Voice Chat' : 'Start Voice Chat'}
-        </span>
-      </Button>
+    <div className="space-y-3">
+      <div className="flex items-center space-x-3">
+        <Button
+          onClick={handleToggle}
+          disabled={isConnecting}
+          variant={isConnected ? "destructive" : isActive ? "default" : "outline"}
+          size="sm"
+          className="flex items-center space-x-2"
+        >
+          {isConnected ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          <span className="text-xs">
+            {isConnecting ? 'Connecting...' : isConnected ? 'End Voice Chat' : 'Start Voice Chat'}
+          </span>
+        </Button>
 
-      {isConnected && (
-        <div className="flex items-center space-x-2 text-green-600">
-          <Volume2 className="w-4 h-4" />
-          <span className="text-xs">Live Audio Active</span>
+        {isConnected && (
+          <div className="flex items-center space-x-2 text-green-600">
+            <Volume2 className="w-4 h-4" />
+            <span className="text-xs">Live Audio Active</span>
+          </div>
+        )}
+      </div>
+
+      {/* Show streaming text response */}
+      {currentResponse && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="flex items-start space-x-2">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mt-2"></div>
+            <div>
+              <p className="text-xs text-blue-600 font-medium mb-1">AI is responding...</p>
+              <p className="text-sm text-gray-800">{currentResponse}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
