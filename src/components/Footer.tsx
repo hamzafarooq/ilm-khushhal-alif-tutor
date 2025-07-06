@@ -9,12 +9,13 @@ export const Footer = () => {
               ALIF AI Tutor
             </h3>
             <p className="text-gray-300 mb-6 max-w-md">
-              Empowering every Pakistani student with intelligent, culturally-relevant, 
-              and personalized education in both English and Urdu.
+              Starting with الف (Alif), the first letter of learning. Empowering every Pakistani student 
+              with intelligent, culturally-relevant, and personalized education in both English and Urdu.
             </p>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-400 space-y-1">
               <p>🇵🇰 Made with love in Pakistan</p>
               <p>🌟 For Pakistani students, by Pakistani educators</p>
+              <p>⚡ Powered by Traversaal.ai • 2025</p>
             </div>
           </div>
           
@@ -32,7 +33,7 @@ export const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-gray-300">
-              <li>📧 hello@alif-tutor.pk</li>
+              <li>📧 hello@traversaal.ai</li>
               <li>📱 +92 300 1234567</li>
               <li>📍 Karachi, Pakistan</li>
               <li>
@@ -48,7 +49,7 @@ export const Footer = () => {
         
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2024 ALIF AI Tutor. All rights reserved. | Privacy Policy | Terms of Service
+            © 2025 ALIF AI Tutor by Traversaal.ai. All rights reserved. | Privacy Policy | Terms of Service
           </p>
           <p className="text-gray-400 text-sm">
             Built with ❤️ for the future of Pakistani education

@@ -15,7 +15,7 @@ export const Hero = () => {
       <div className="max-w-6xl mx-auto text-center relative z-10">
         <div className="mb-8 inline-flex items-center px-6 py-3 bg-emerald-100 rounded-full text-emerald-800 font-medium">
           <BookOpen className="w-5 h-5 mr-2" />
-          Powered by ALIF - Adaptive Learning Intelligence
+          Powered by ALIF - The First Letter of Learning (الف) | Traversaal.ai
         </div>
         
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
@@ -26,12 +26,12 @@ export const Hero = () => {
         </h1>
         
         <p className="text-xl md:text-2xl text-gray-700 mb-4 max-w-4xl mx-auto leading-relaxed">
-          An AI tutor that speaks your language, understands your culture, and adapts to your learning style.
+          Meet ALIF - your AI tutor that speaks your language, understands your culture, and adapts to your learning style.
         </p>
         
         <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-          Empowering students across Pakistan with personalized education in both English and Urdu, 
-          making quality learning accessible to every child, everywhere.
+          Starting with الف (Alif), the first letter of the Urdu alphabet, we're building the foundation 
+          for quality education across Pakistan. Empowering students with personalized learning in both English and Urdu.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
@@ -53,6 +53,7 @@ export const Hero = () => {
         <div className="text-sm text-gray-500 space-y-1">
           <p>✨ No credit card required • Available 24/7 • Works on any device</p>
           <p className="font-medium text-emerald-700">اردو اور انگریزی میں دستیاب - Available in Urdu and English</p>
+          <p className="text-xs text-gray-400 mt-2">Powered by Traversaal.ai • 2025</p>
         </div>
       </div>
     </section>
