@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send, BookOpen, Calculator, Globe } from "lucide-react";
@@ -21,7 +22,7 @@ export const ChatbotDemo = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [streamingText, setStreamingText] = useState('');
-  const [accumulatedVoiceResponse, setAccumulatedVoiceResponse] = useState('');
+  const [streamingMessageIndex, setStreamingMessageIndex] = useState<number | null>(null);
 
   const sampleQuestions = [
     { icon: <Calculator className="w-3 h-3" />, text: "Solve: 15 + 27" },
@@ -59,12 +60,11 @@ export const ChatbotDemo = () => {
       };
       setMessages(prev => [...prev, newMessage]);
       setStreamingText('');
-      setAccumulatedVoiceResponse('');
+      setStreamingMessageIndex(null);
       console.log('Added complete voice message to demo history:', text.substring(0, 100) + '...');
     } else if (!isComplete) {
       // Update the streaming text for real-time display
       setStreamingText(text);
-      setAccumulatedVoiceResponse(text);
     }
   };
 
@@ -89,7 +89,11 @@ export const ChatbotDemo = () => {
       language: 'en'
     };
     
-    setMessages(prev => [...prev, placeholderMessage]);
+    setMessages(prev => {
+      const newMessages = [...prev, placeholderMessage];
+      setStreamingMessageIndex(newMessages.length - 1);
+      return newMessages;
+    });
 
     try {
       console.log('Sending message to ALIF Tutor:', currentInput);
@@ -107,7 +111,7 @@ export const ChatbotDemo = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Handle streaming response
+      // Handle streaming response with real-time updates
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullResponse = "";
@@ -132,18 +136,19 @@ export const ChatbotDemo = () => {
                 if (parsed.content) {
                   fullResponse += parsed.content;
                   
-                  // Update the last message with streaming content
-                  setMessages(prev => {
-                    const newMessages = [...prev];
-                    const lastMessageIndex = newMessages.length - 1;
-                    if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
-                      newMessages[lastMessageIndex] = {
-                        ...newMessages[lastMessageIndex],
-                        text: fullResponse
-                      };
-                    }
-                    return newMessages;
-                  });
+                  // Update the streaming message in real-time
+                  if (streamingMessageIndex !== null) {
+                    setMessages(prev => {
+                      const newMessages = [...prev];
+                      if (newMessages[streamingMessageIndex]) {
+                        newMessages[streamingMessageIndex] = {
+                          ...newMessages[streamingMessageIndex],
+                          text: fullResponse
+                        };
+                      }
+                      return newMessages;
+                    });
+                  }
                 }
               } catch (e) {
                 console.log('Skipping invalid JSON:', data);
@@ -155,50 +160,25 @@ export const ChatbotDemo = () => {
 
       console.log('Received full response from ALIF Tutor:', fullResponse);
 
-      // Final update to ensure we have the complete response
-      if (fullResponse) {
+    } catch (error) {
+      console.error('Error calling ALIF Tutor:', error);
+      
+      // Update the placeholder message with error
+      if (streamingMessageIndex !== null) {
         setMessages(prev => {
           const newMessages = [...prev];
-          const lastMessageIndex = newMessages.length - 1;
-          if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
-            newMessages[lastMessageIndex] = {
-              ...newMessages[lastMessageIndex],
-              text: fullResponse
-            };
-          }
-          return newMessages;
-        });
-      } else {
-        // If no response was received, update with error message
-        setMessages(prev => {
-          const newMessages = [...prev];
-          const lastMessageIndex = newMessages.length - 1;
-          if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
-            newMessages[lastMessageIndex] = {
-              ...newMessages[lastMessageIndex],
-              text: "Sorry, I couldn't process that. Please try again!"
+          if (newMessages[streamingMessageIndex]) {
+            newMessages[streamingMessageIndex] = {
+              ...newMessages[streamingMessageIndex],
+              text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment."
             };
           }
           return newMessages;
         });
       }
-    } catch (error) {
-      console.error('Error calling ALIF Tutor:', error);
-      
-      // Update the placeholder message with error
-      setMessages(prev => {
-        const newMessages = [...prev];
-        const lastMessageIndex = newMessages.length - 1;
-        if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
-          newMessages[lastMessageIndex] = {
-            ...newMessages[lastMessageIndex],
-            text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment."
-          };
-        }
-        return newMessages;
-      });
     } finally {
       setIsTyping(false);
+      setStreamingMessageIndex(null);
     }
   };
 
@@ -234,7 +214,12 @@ export const ChatbotDemo = () => {
                 textAlign: message.language === 'ur' ? 'right' : 'left'
               }}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {message.text}
+                {index === streamingMessageIndex && !message.text && (
+                  <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-1"></span>
+                )}
+              </p>
             </div>
           </div>
         ))}
@@ -251,7 +236,7 @@ export const ChatbotDemo = () => {
           </div>
         )}
         
-        {isTyping && (
+        {isTyping && streamingMessageIndex === null && (
           <div className="flex justify-start">
             <div className="bg-white text-gray-800 shadow-sm border px-4 py-2 rounded-2xl">
               <div className="flex space-x-1">

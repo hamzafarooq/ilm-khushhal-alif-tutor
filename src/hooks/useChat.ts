@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { loadMessages, createThread, saveMessage, callAlifAPI } from "@/services/chatService";
 import { useRAG } from "./useRAG";
@@ -148,7 +149,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
       const responseStream = await callAlifAPI(userMessage);
       
       if (responseStream) {
-        // Handle streaming response
+        // Handle streaming response with real-time updates
         const reader = responseStream.getReader();
         const decoder = new TextDecoder();
         let fullResponse = "";
@@ -171,6 +172,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
                 const parsed = JSON.parse(data);
                 if (parsed.content) {
                   fullResponse += parsed.content;
+                  // Update streaming response in real-time
                   setCurrentResponse(fullResponse);
                 }
               } catch (e) {
@@ -180,7 +182,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
           }
         }
 
-        // Save AI response with RAG enhancement
+        // Save AI response with RAG enhancement only after streaming is complete
         if (currentThreadId && fullResponse) {
           const { sources } = enhanceResponseWithRAG(fullResponse, userMessage);
           
