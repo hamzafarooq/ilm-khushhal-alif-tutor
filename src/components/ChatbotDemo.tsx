@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   text: string;
@@ -38,19 +37,58 @@ export const ChatbotDemo = () => {
     try {
       console.log('Sending message to ALIF:', currentInput);
       
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { message: currentInput }
+      // Call the streaming chat function using fetch (same as ChatInterface)
+      const response = await fetch(`https://tqrlxdvmpfjfugrwbspx.functions.supabase.co/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxcmx4ZHZtcGZqZnVncndic3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3ODA0MTksImV4cCI6MjA2NzM1NjQxOX0.serTY0x1SYdNbe40omRovxcGhepPov1I9DPoH-pjlEY`,
+        },
+        body: JSON.stringify({ message: currentInput })
       });
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log('Received response from ALIF:', data);
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') {
+                break;
+              }
+
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.content) {
+                  fullResponse += parsed.content;
+                }
+              } catch (e) {
+                // Skip invalid JSON
+                console.log('Skipping invalid JSON:', data);
+              }
+            }
+          }
+        }
+      }
+
+      console.log('Received full response from ALIF:', fullResponse);
 
       const aiMessage: Message = {
-        text: data.message || "Sorry, I couldn't process that. Please try again!",
+        text: fullResponse || "Sorry, I couldn't process that. Please try again!",
         isUser: false,
         language: 'en'
       };
