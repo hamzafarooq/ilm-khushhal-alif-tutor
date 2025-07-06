@@ -6,31 +6,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// ElevenLabs voice mapping
-const voiceMapping: Record<string, string> = {
-  'Aria': '9BWtsMINqrJLrRacOk9x',
-  'Roger': 'CwhRBWXzGAHq8TQ4Fs17',
-  'Sarah': 'EXAVITQu4vr4xnSDxMaL',
-  'Laura': 'FGY2WhTYpPnrIDTdsKH5',
-  'Charlie': 'IKne3meq5aSn9XLyUdCD'
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { text, voiceId = 'Aria' } = await req.json()
+    const { text, voiceId = 'kD4dEWy2fbcyXlge6iHh' } = await req.json()
 
     if (!text) {
       throw new Error('Text is required')
     }
 
-    const elevenLabsVoiceId = voiceMapping[voiceId] || voiceMapping['Aria']
+    // Use the Pakistani tone voice ID as default
+    const selectedVoiceId = voiceId === 'Aria' ? 'kD4dEWy2fbcyXlge6iHh' : voiceId
 
     // Call ElevenLabs Text-to-Speech API
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${elevenLabsVoiceId}`, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
       method: 'POST',
       headers: {
         'xi-api-key': Deno.env.get('elevenlab_api_key') || '',
