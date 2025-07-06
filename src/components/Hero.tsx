@@ -1,8 +1,22 @@
-
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+
+  const handleTryFree = () => {
+    navigate("/auth");
+  };
+
+  const handleWatchDemo = () => {
+    // Smooth scroll to demo section
+    const demoSection = document.getElementById('demo-section');
+    if (demoSection) {
+      demoSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-amber-50 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -37,6 +51,7 @@ export const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
           <Button 
             size="lg" 
+            onClick={handleTryFree}
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             Try ALIF Tutor for Free
@@ -44,6 +59,7 @@ export const Hero = () => {
           <Button 
             variant="outline" 
             size="lg" 
+            onClick={handleWatchDemo}
             className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg font-semibold rounded-xl"
           >
             Watch Demo

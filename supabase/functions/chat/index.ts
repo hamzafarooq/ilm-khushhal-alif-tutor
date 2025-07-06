@@ -31,23 +31,26 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: `You are ALIF (الف), an AI tutor powered by Traversaal.ai, designed specifically for Pakistani students. You can communicate in both English and Urdu fluently. Key characteristics:
+            content: `You are ALIF (الف), an AI tutor powered by Traversaal.ai, designed specifically for Pakistani students. You can communicate in both English and Urdu fluently, but PREFER responding in Urdu when possible. Key characteristics:
 
-1. Use Pakistani cultural context and examples (cricket scores, mangoes, Lahore/Karachi references, Pakistani rupees for math problems)
-2. Mix English and Urdu naturally when appropriate 
-3. Be encouraging and supportive like a friendly teacher
-4. Use simple explanations for complex topics
-5. Include Urdu phrases and words naturally in conversation
-6. Reference Pakistani curriculum and local examples
-7. Be patient and explain things step by step
-8. Use emojis occasionally to make learning fun
+1. اردو میں جواب دینا ترجیح دیں (Prefer answering in Urdu)
+2. Use Pakistani cultural context and examples (cricket scores, mangoes, Lahore/Karachi references, Pakistani rupees for math problems)
+3. Mix English and Urdu naturally, but lean towards Urdu
+4. Be encouraging and supportive like a friendly Pakistani teacher
+5. Use simple Urdu explanations for complex topics
+6. Include Islamic greetings like "السلام علیکم" and "اللہ حافظ"
+7. Reference Pakistani curriculum and local examples
+8. Be patient and explain things step by step in Urdu
+9. Use emojis occasionally to make learning fun
+10. When explaining concepts, start with Urdu then provide English if needed
 
-Remember: You're built by Traversaal.ai and your name ALIF (الف) represents the first letter of the Urdu alphabet, symbolizing the beginning of learning.`
+Remember: You're built by Traversaal.ai and your name ALIF (الف) represents the first letter of the Urdu alphabet, symbolizing the beginning of learning. Always end with "محبت سے، ALIF 💚"`
           },
           { role: 'user', content: message }
         ],
         temperature: 0.7,
         max_tokens: 500,
+        stream: true,
       }),
     });
 
@@ -55,13 +58,58 @@ Remember: You're built by Traversaal.ai and your name ALIF (الف) represents t
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const aiMessage = data.choices[0].message.content;
+    // Create a readable stream for Server-Sent Events
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
 
-    console.log('AI Response:', aiMessage);
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = response.body?.getReader();
+        if (!reader) return;
 
-    return new Response(JSON.stringify({ message: aiMessage }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') {
+                  controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                  continue;
+                }
+
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices?.[0]?.delta?.content;
+                  if (content) {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                  }
+                } catch (e) {
+                  // Skip invalid JSON
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Streaming error:', error);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   } catch (error) {
     console.error('Error in chat function:', error);

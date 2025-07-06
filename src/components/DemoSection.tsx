@@ -1,9 +1,8 @@
-
 import { ChatbotDemo } from "./ChatbotDemo";
 
 export const DemoSection = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+    <section id="demo-section" className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
