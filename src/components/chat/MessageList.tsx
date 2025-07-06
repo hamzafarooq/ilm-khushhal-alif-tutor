@@ -1,11 +1,22 @@
 
 import { useRef, useEffect } from "react";
+import { MessageWithSources } from "./MessageWithSources";
+
+interface Source {
+  id: string;
+  title: string;
+  excerpt: string;
+  page?: number;
+  document: string;
+  relevanceScore: number;
+}
 
 interface Message {
   id: string;
   content: string;
   is_user: boolean;
   created_at: string;
+  sources?: Source[];
 }
 
 interface MessageListProps {
@@ -13,29 +24,6 @@ interface MessageListProps {
   currentResponse: string;
   isTyping: boolean;
 }
-
-// Helper function to convert URLs to clickable links
-const renderTextWithLinks = (text: string) => {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
-  
-  return parts.map((part, index) => {
-    if (urlRegex.test(part)) {
-      return (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 underline break-all"
-        >
-          {part}
-        </a>
-      );
-    }
-    return part;
-  });
-};
 
 export const MessageList = ({ messages, currentResponse, isTyping }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -60,6 +48,11 @@ export const MessageList = ({ messages, currentResponse, isTyping }: MessageList
           <p className="text-sm text-gray-500 mt-2">
             I'm ALIF, your Urdu AI tutor. Ask me anything!
           </p>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg inline-block">
+            <p className="text-xs text-blue-700">
+              💡 Upload documents in the "Docs" tab for more accurate, source-based answers
+            </p>
+          </div>
         </div>
       )}
 
@@ -68,28 +61,21 @@ export const MessageList = ({ messages, currentResponse, isTyping }: MessageList
           key={message.id}
           className={`flex ${message.is_user ? 'justify-end' : 'justify-start'}`}
         >
-          <div
-            className={`max-w-xs lg:max-w-md px-6 py-4 rounded-2xl ${
-              message.is_user
-                ? 'bg-emerald-500 text-white'
-                : 'bg-white text-gray-800 shadow-sm border'
-            }`}
-          >
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-              {renderTextWithLinks(message.content)}
-            </p>
-          </div>
+          <MessageWithSources message={message} />
         </div>
       ))}
 
       {/* Current streaming response */}
       {currentResponse && (
         <div className="flex justify-start">
-          <div className="max-w-xs lg:max-w-md px-6 py-4 rounded-2xl bg-white text-gray-800 shadow-sm border">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-              {renderTextWithLinks(currentResponse)}
-            </p>
-          </div>
+          <MessageWithSources 
+            message={{
+              id: 'streaming',
+              content: currentResponse,
+              is_user: false,
+              created_at: new Date().toISOString()
+            }}
+          />
         </div>
       )}
 

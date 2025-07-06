@@ -1,12 +1,22 @@
-
 import { useState, useEffect } from "react";
 import { loadMessages, createThread, saveMessage, callAlifAPI } from "@/services/chatService";
+import { useRAG } from "./useRAG";
+
+interface Source {
+  id: string;
+  title: string;
+  excerpt: string;
+  page?: number;
+  document: string;
+  relevanceScore: number;
+}
 
 interface Message {
   id: string;
   content: string;
   is_user: boolean;
   created_at: string;
+  sources?: Source[];
 }
 
 export const useChat = (userId: string, threadId: string | null, onThreadCreated: (threadId: string) => void) => {
@@ -16,6 +26,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
   const [currentResponse, setCurrentResponse] = useState("");
   const [streamingText, setStreamingText] = useState("");
   const [accumulatedVoiceText, setAccumulatedVoiceText] = useState("");
+  const { enhanceResponseWithRAG } = useRAG();
 
   useEffect(() => {
     if (threadId) {
@@ -72,7 +83,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
     setCurrentResponse(text);
     
     if (isComplete && text.trim()) {
-      // Save the complete AI response to database
+      // Save the complete AI response to database with RAG enhancement
       let currentThreadId = threadId;
       
       if (!currentThreadId) {
@@ -84,10 +95,19 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
       }
 
       if (currentThreadId) {
+        // Get the last user message to find relevant sources
+        const lastUserMessage = messages.filter(m => m.is_user).pop();
+        const query = lastUserMessage?.content || '';
+        
+        // Enhance response with RAG
+        const { sources } = enhanceResponseWithRAG(text, query);
+        
         const savedAIMessage = await saveMessage(currentThreadId, text, false);
         if (savedAIMessage) {
-          setMessages(prev => [...prev, savedAIMessage]);
-          console.log('Saved complete voice AI response to database:', text.substring(0, 100) + '...');
+          // Add sources to the message
+          const messageWithSources = { ...savedAIMessage, sources };
+          setMessages(prev => [...prev, messageWithSources]);
+          console.log('Saved complete voice AI response with sources to database:', text.substring(0, 100) + '...');
         }
       }
       
@@ -160,11 +180,14 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
           }
         }
 
-        // Save AI response
+        // Save AI response with RAG enhancement
         if (currentThreadId && fullResponse) {
+          const { sources } = enhanceResponseWithRAG(fullResponse, userMessage);
+          
           const savedAIMessage = await saveMessage(currentThreadId, fullResponse, false);
           if (savedAIMessage) {
-            setMessages(prev => [...prev, savedAIMessage]);
+            const messageWithSources = { ...savedAIMessage, sources };
+            setMessages(prev => [...prev, messageWithSources]);
           }
         }
       }

@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { ChatInterface } from "@/components/ChatInterface";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
-import { LogOut, Plus } from "lucide-react";
+import { KnowledgeBaseTab } from "@/components/KnowledgeBaseTab";
+import { LogOut, Plus, MessageSquare, BookOpen } from "lucide-react";
 
 const Chat = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'chat' | 'knowledge'>('chat');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,29 +81,59 @@ const Chat = () => {
             السلام علیکم {user.user_metadata?.name || user.email}! 👋
           </div>
 
-          <Button
-            onClick={handleNewThread}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            نیا سوال (New Thread)
-          </Button>
+          {/* Tab Navigation */}
+          <div className="flex space-x-2 mb-4">
+            <Button
+              onClick={() => setActiveTab('chat')}
+              variant={activeTab === 'chat' ? 'default' : 'outline'}
+              size="sm"
+              className="flex-1"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Chat
+            </Button>
+            <Button
+              onClick={() => setActiveTab('knowledge')}
+              variant={activeTab === 'knowledge' ? 'default' : 'outline'}
+              size="sm"
+              className="flex-1"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              Docs
+            </Button>
+          </div>
+
+          {activeTab === 'chat' && (
+            <Button
+              onClick={handleNewThread}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              نیا سوال (New Thread)
+            </Button>
+          )}
         </div>
 
-        <ThreadSidebar 
-          userId={user.id}
-          currentThreadId={currentThreadId}
-          onThreadSelect={setCurrentThreadId}
-        />
+        {activeTab === 'chat' && (
+          <ThreadSidebar 
+            userId={user.id}
+            currentThreadId={currentThreadId}
+            onThreadSelect={setCurrentThreadId}
+          />
+        )}
       </div>
 
-      {/* Main Chat Area */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        <ChatInterface 
-          userId={user.id}
-          threadId={currentThreadId}
-          onThreadCreated={setCurrentThreadId}
-        />
+        {activeTab === 'chat' ? (
+          <ChatInterface 
+            userId={user.id}
+            threadId={currentThreadId}
+            onThreadCreated={setCurrentThreadId}
+          />
+        ) : (
+          <KnowledgeBaseTab />
+        )}
       </div>
     </div>
   );
