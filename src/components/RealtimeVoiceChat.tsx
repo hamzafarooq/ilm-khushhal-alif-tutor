@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
@@ -16,6 +17,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
   const [isConnected, setIsConnected] = useState(false);
   const [currentResponse, setCurrentResponse] = useState('');
   const [accumulatedText, setAccumulatedText] = useState('');
+  const [userSpeakingText, setUserSpeakingText] = useState('');
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const dcRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -75,26 +77,50 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
         const event = JSON.parse(e.data);
         console.log('Received event from OpenAI:', event);
         
+        // Handle user's speech transcription (what they said)
+        if (event.type === 'conversation.item.input_audio_transcription.completed') {
+          console.log('User speech transcribed:', event.transcript);
+          setUserSpeakingText(event.transcript);
+          
+          // Forward this as a user message
+          onMessage?.({
+            type: 'conversation.item.created',
+            item: {
+              role: 'user',
+              content: [{
+                type: 'input_text',
+                text: event.transcript
+              }]
+            }
+          });
+        }
+        
         // Handle streaming text responses - accumulate properly
-        if (event.type === 'response.audio_transcript.delta') {
+        else if (event.type === 'response.audio_transcript.delta') {
           const deltaText = event.delta || '';
           setAccumulatedText(prev => {
             const newText = prev + deltaText;
-            console.log('Accumulated text so far:', newText);
+            console.log('Accumulated AI text so far:', newText);
             onTextUpdate?.(newText, false);
             setCurrentResponse(newText);
             return newText;
           });
-        } else if (event.type === 'response.audio_transcript.done') {
-          console.log('Audio transcript complete:', accumulatedText);
+        } 
+        else if (event.type === 'response.audio_transcript.done') {
+          console.log('AI audio transcript complete:', accumulatedText);
           onTextUpdate?.(accumulatedText, true);
           setCurrentResponse('');
           setAccumulatedText('');
-        } else if (event.type === 'response.done') {
+        } 
+        else if (event.type === 'response.done') {
           console.log('Response complete');
+          if (accumulatedText) {
+            onTextUpdate?.(accumulatedText, true);
+          }
           setCurrentResponse('');
           setAccumulatedText('');
-        } else if (event.type === 'conversation.item.created' && event.item?.content) {
+        } 
+        else if (event.type === 'conversation.item.created' && event.item?.content) {
           // Handle text content
           const textContent = event.item.content.find((c: any) => c.type === 'text');
           if (textContent && event.item.role === 'assistant') {
@@ -180,6 +206,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
     setIsActive(false);
     setCurrentResponse('');
     setAccumulatedText('');
+    setUserSpeakingText('');
     
     toast({
       title: "Disconnected",
@@ -193,26 +220,6 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
     } else if (!isConnecting) {
       setIsActive(true);
       initializeConnection();
-    }
-  };
-
-  const sendTextMessage = (text: string) => {
-    if (dcRef.current?.readyState === 'open') {
-      const event = {
-        type: 'conversation.item.create',
-        item: {
-          type: 'message',
-          role: 'user',
-          content: [
-            {
-              type: 'input_text',
-              text
-            }
-          ]
-        }
-      };
-      dcRef.current.send(JSON.stringify(event));
-      dcRef.current.send(JSON.stringify({type: 'response.create'}));
     }
   };
 
@@ -247,7 +254,20 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
         )}
       </div>
 
-      {/* Show streaming text response */}
+      {/* Show user speaking text */}
+      {userSpeakingText && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+          <div className="flex items-start space-x-2">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
+            <div>
+              <p className="text-xs text-emerald-600 font-medium mb-1">You said:</p>
+              <p className="text-sm text-gray-800">{userSpeakingText}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show streaming AI response */}
       {currentResponse && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <div className="flex items-start space-x-2">

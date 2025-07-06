@@ -18,9 +18,18 @@ interface ChatInputProps {
   isTyping: boolean;
   messages: Message[];
   onStreamingText?: (text: string, isComplete: boolean) => void;
+  onVoiceMessage?: (event: any) => void;
 }
 
-export const ChatInput = ({ input, setInput, onSend, isTyping, messages, onStreamingText }: ChatInputProps) => {
+export const ChatInput = ({ 
+  input, 
+  setInput, 
+  onSend, 
+  isTyping, 
+  messages, 
+  onStreamingText,
+  onVoiceMessage 
+}: ChatInputProps) => {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -30,16 +39,9 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages, onStrea
     }
   };
 
-  const handleVoiceMessage = (event: any) => {
+  const handleVoiceMessageInternal = (event: any) => {
     console.log('Voice event received in ChatInput:', event);
-    // Handle different types of voice events from OpenAI
-    if (event.type === 'conversation.item.created' && event.item.content) {
-      // Handle transcribed text or AI responses
-      const content = event.item.content.find((c: any) => c.type === 'text');
-      if (content && event.item.role === 'assistant') {
-        console.log('AI response received in ChatInput:', content.text);
-      }
-    }
+    onVoiceMessage?.(event);
   };
 
   const handleTextUpdate = (text: string, isComplete: boolean) => {
@@ -70,7 +72,7 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages, onStrea
         </div>
 
         <RealtimeVoiceChat
-          onMessage={handleVoiceMessage}
+          onMessage={handleVoiceMessageInternal}
           isActive={isVoiceActive}
           setIsActive={setIsVoiceActive}
           onTextUpdate={handleTextUpdate}

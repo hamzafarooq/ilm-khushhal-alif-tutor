@@ -14,6 +14,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [currentResponse, setCurrentResponse] = useState("");
+  const [streamingText, setStreamingText] = useState("");
 
   useEffect(() => {
     if (threadId) {
@@ -27,6 +28,71 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
     if (!threadId) return;
     const loadedMessages = await loadMessages(threadId);
     setMessages(loadedMessages);
+  };
+
+  const handleVoiceMessage = async (event: any) => {
+    console.log('Voice event received in useChat:', event);
+    
+    let currentThreadId = threadId;
+
+    // Handle user's spoken input
+    if (event.type === 'conversation.item.created' && 
+        event.item.content && 
+        event.item.role === 'user') {
+      
+      const content = event.item.content.find((c: any) => c.type === 'input_text');
+      if (content && content.text) {
+        console.log('User voice input received:', content.text);
+        
+        // Create new thread if needed
+        if (!currentThreadId) {
+          currentThreadId = await createThread(userId, content.text);
+          if (currentThreadId) {
+            onThreadCreated(currentThreadId);
+          }
+        }
+
+        // Save user message from voice
+        if (currentThreadId) {
+          const savedUserMessage = await saveMessage(currentThreadId, content.text, true);
+          if (savedUserMessage) {
+            setMessages(prev => [...prev, savedUserMessage]);
+          }
+        }
+      }
+    }
+  };
+
+  const handleStreamingText = async (text: string, isComplete: boolean) => {
+    console.log('Streaming text in useChat:', { text: text.substring(0, 50) + '...', isComplete });
+    
+    if (isComplete && text.trim()) {
+      // Save the complete AI response to database
+      let currentThreadId = threadId;
+      
+      if (!currentThreadId) {
+        // This shouldn't happen in voice mode, but just in case
+        currentThreadId = await createThread(userId, text.substring(0, 50));
+        if (currentThreadId) {
+          onThreadCreated(currentThreadId);
+        }
+      }
+
+      if (currentThreadId) {
+        const savedAIMessage = await saveMessage(currentThreadId, text, false);
+        if (savedAIMessage) {
+          setMessages(prev => [...prev, savedAIMessage]);
+          console.log('Saved voice AI response to database:', text.substring(0, 50) + '...');
+        }
+      }
+      
+      setCurrentResponse("");
+      setStreamingText("");
+    } else if (!isComplete) {
+      // Update streaming text display
+      setCurrentResponse(text);
+      setStreamingText(text);
+    }
   };
 
   const handleSend = async () => {
@@ -121,6 +187,8 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
     setInput,
     isTyping,
     currentResponse,
-    handleSend
+    handleSend,
+    handleVoiceMessage,
+    handleStreamingText
   };
 };

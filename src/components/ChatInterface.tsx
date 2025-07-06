@@ -11,11 +11,16 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfaceProps) => {
-  const { messages, input, setInput, isTyping, currentResponse, handleSend } = useChat(
-    userId,
-    threadId,
-    onThreadCreated
-  );
+  const { 
+    messages, 
+    input, 
+    setInput, 
+    isTyping, 
+    currentResponse, 
+    handleSend,
+    handleVoiceMessage,
+    handleStreamingText
+  } = useChat(userId, threadId, onThreadCreated);
 
   return (
     <div className="flex flex-col h-full">
@@ -33,6 +38,8 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
         onSend={handleSend}
         isTyping={isTyping}
         messages={messages}
+        onStreamingText={handleStreamingText}
+        onVoiceMessage={handleVoiceMessage}
       />
     </div>
   );
