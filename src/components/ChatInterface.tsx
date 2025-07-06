@@ -1,8 +1,8 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Send, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AudioControls } from "@/components/AudioControls";
 
 interface Message {
   id: string;
@@ -205,6 +205,10 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
     }
   };
 
+  const handleSpeechResult = (text: string) => {
+    setInput(text);
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -285,23 +289,31 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
 
       {/* Input */}
       <div className="bg-white border-t p-6">
-        <div className="flex space-x-4">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="اردو یا انگریزی میں سوال پوچھیں... Ask in Urdu or English..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none"
-            rows={1}
+        <div className="space-y-4">
+          <div className="flex space-x-4">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="اردو یا انگریزی میں سوال پوچھیں... Ask in Urdu or English..."
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none"
+              rows={1}
+              disabled={isTyping}
+            />
+            <Button
+              onClick={handleSend}
+              disabled={isTyping || !input.trim()}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <AudioControls
+            onSpeechResult={handleSpeechResult}
+            lastAIResponse={messages.filter(m => !m.is_user).pop()?.content}
             disabled={isTyping}
           />
-          <Button
-            onClick={handleSend}
-            disabled={isTyping || !input.trim()}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl disabled:opacity-50"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
         </div>
         
         <p className="text-xs text-gray-500 text-center mt-3">

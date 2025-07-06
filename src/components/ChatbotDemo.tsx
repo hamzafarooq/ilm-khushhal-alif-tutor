@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
+import { AudioControls } from "@/components/AudioControls";
 
 interface Message {
   text: string;
@@ -19,6 +19,10 @@ export const ChatbotDemo = () => {
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  const handleSpeechResult = (text: string) => {
+    setInput(text);
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -204,23 +208,31 @@ export const ChatbotDemo = () => {
         )}
       </div>
 
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && !isTyping && handleSend()}
-          placeholder="Ask me anything in English or Urdu..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+      <div className="space-y-3">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && !isTyping && handleSend()}
+            placeholder="Ask me anything in English or Urdu..."
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+            disabled={isTyping}
+          />
+          <Button
+            onClick={handleSend}
+            disabled={isTyping || !input.trim()}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl disabled:opacity-50"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <AudioControls
+          onSpeechResult={handleSpeechResult}
+          lastAIResponse={messages.filter(m => !m.isUser).pop()?.text}
           disabled={isTyping}
         />
-        <Button
-          onClick={handleSend}
-          disabled={isTyping || !input.trim()}
-          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl disabled:opacity-50"
-        >
-          <Send className="w-4 h-4" />
-        </Button>
       </div>
 
       <p className="text-xs text-gray-500 text-center mt-3">
