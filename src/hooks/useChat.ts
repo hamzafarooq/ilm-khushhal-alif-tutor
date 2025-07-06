@@ -15,6 +15,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
   const [isTyping, setIsTyping] = useState(false);
   const [currentResponse, setCurrentResponse] = useState("");
   const [streamingText, setStreamingText] = useState("");
+  const [accumulatedVoiceText, setAccumulatedVoiceText] = useState("");
 
   useEffect(() => {
     if (threadId) {
@@ -64,7 +65,11 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
   };
 
   const handleStreamingText = async (text: string, isComplete: boolean) => {
-    console.log('Streaming text in useChat:', { text: text.substring(0, 50) + '...', isComplete });
+    console.log('Streaming text in useChat:', { text: text.substring(0, 50) + '...', isComplete, fullLength: text.length });
+    
+    // Always update the accumulated text for display
+    setAccumulatedVoiceText(text);
+    setCurrentResponse(text);
     
     if (isComplete && text.trim()) {
       // Save the complete AI response to database
@@ -82,16 +87,14 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
         const savedAIMessage = await saveMessage(currentThreadId, text, false);
         if (savedAIMessage) {
           setMessages(prev => [...prev, savedAIMessage]);
-          console.log('Saved voice AI response to database:', text.substring(0, 50) + '...');
+          console.log('Saved complete voice AI response to database:', text.substring(0, 100) + '...');
         }
       }
       
+      // Clear streaming states
       setCurrentResponse("");
       setStreamingText("");
-    } else if (!isComplete) {
-      // Update streaming text display
-      setCurrentResponse(text);
-      setStreamingText(text);
+      setAccumulatedVoiceText("");
     }
   };
 

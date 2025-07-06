@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
@@ -22,6 +21,7 @@ export const ChatbotDemo = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const [accumulatedVoiceResponse, setAccumulatedVoiceResponse] = useState('');
 
   const handleVoiceMessage = (event: any) => {
     console.log('Voice event received in demo:', event);
@@ -41,10 +41,10 @@ export const ChatbotDemo = () => {
   };
 
   const handleStreamingText = (text: string, isComplete: boolean) => {
-    console.log('Streaming text update:', { text: text.substring(0, 50) + '...', isComplete });
+    console.log('Streaming text update in demo:', { text: text.substring(0, 50) + '...', isComplete, fullLength: text.length });
     
     if (isComplete && text.trim()) {
-      // Add the complete message to the messages list and clear streaming
+      // Add the complete accumulated message to the messages list
       const newMessage: Message = {
         text: text,
         isUser: false,
@@ -52,10 +52,12 @@ export const ChatbotDemo = () => {
       };
       setMessages(prev => [...prev, newMessage]);
       setStreamingText('');
-      console.log('Added complete message to history:', text.substring(0, 50) + '...');
+      setAccumulatedVoiceResponse('');
+      console.log('Added complete voice message to demo history:', text.substring(0, 100) + '...');
     } else if (!isComplete) {
-      // Update the streaming text
+      // Update the streaming text for real-time display
       setStreamingText(text);
+      setAccumulatedVoiceResponse(text);
     }
   };
 
@@ -225,7 +227,7 @@ export const ChatbotDemo = () => {
                 textAlign: message.language === 'ur' ? 'right' : 'left'
               }}
             >
-              <p className="text-sm leading-relaxed">{message.text}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
             </div>
           </div>
         ))}
@@ -236,7 +238,7 @@ export const ChatbotDemo = () => {
             <div className="max-w-xs px-4 py-2 rounded-2xl bg-blue-50 text-gray-800 shadow-sm border border-blue-200">
               <div className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mt-1"></div>
-                <p className="text-sm leading-relaxed">{streamingText}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{streamingText}</p>
               </div>
             </div>
           </div>

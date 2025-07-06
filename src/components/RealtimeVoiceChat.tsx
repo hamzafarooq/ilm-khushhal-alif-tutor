@@ -95,25 +95,28 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
           });
         }
         
-        // Handle streaming text responses - accumulate properly
+        // Handle streaming text responses - accumulate properly without truncation
         else if (event.type === 'response.audio_transcript.delta') {
           const deltaText = event.delta || '';
           setAccumulatedText(prev => {
             const newText = prev + deltaText;
-            console.log('Accumulated AI text so far:', newText);
+            console.log('Accumulated AI text length:', newText.length, 'Latest chunk:', deltaText);
             onTextUpdate?.(newText, false);
             setCurrentResponse(newText);
             return newText;
           });
         } 
         else if (event.type === 'response.audio_transcript.done') {
-          console.log('AI audio transcript complete:', accumulatedText);
-          onTextUpdate?.(accumulatedText, true);
+          console.log('AI audio transcript complete, final length:', accumulatedText.length);
+          // Use the accumulated text for the final response
+          const finalText = accumulatedText;
+          onTextUpdate?.(finalText, true);
           setCurrentResponse('');
           setAccumulatedText('');
         } 
         else if (event.type === 'response.done') {
-          console.log('Response complete');
+          console.log('Response complete, ensuring final text is saved');
+          // Make sure we save any remaining accumulated text
           if (accumulatedText) {
             onTextUpdate?.(accumulatedText, true);
           }
@@ -124,6 +127,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
           // Handle text content
           const textContent = event.item.content.find((c: any) => c.type === 'text');
           if (textContent && event.item.role === 'assistant') {
+            console.log('Assistant text content received:', textContent.text.length);
             onTextUpdate?.(textContent.text, true);
           }
         }
@@ -274,7 +278,7 @@ export const RealtimeVoiceChat = ({ onMessage, isActive, setIsActive, onTextUpda
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mt-2"></div>
             <div>
               <p className="text-xs text-blue-600 font-medium mb-1">AI is responding...</p>
-              <p className="text-sm text-gray-800">{currentResponse}</p>
+              <p className="text-sm text-gray-800 whitespace-pre-wrap">{currentResponse}</p>
             </div>
           </div>
         </div>
