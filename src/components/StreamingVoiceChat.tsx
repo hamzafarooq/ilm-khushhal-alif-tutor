@@ -16,7 +16,6 @@ export const StreamingVoiceChat = ({ onSpeechResult, isAudioMode, setIsAudioMode
   const [isConverting, setIsConverting] = useState(false);
   const { isRecording, isPlaying, startRecording, stopRecording, playAudio } = useAudio();
   const { toast } = useToast();
-  const [currentResponse, setCurrentResponse] = useState('');
 
   const handleStartRecording = async () => {
     try {
@@ -60,22 +59,6 @@ export const StreamingVoiceChat = ({ onSpeechResult, isAudioMode, setIsAudioMode
     }
   };
 
-  const playResponseAudio = async (text: string) => {
-    if (!text || !isAudioMode) return;
-    
-    try {
-      const audioBase64 = await convertTextToSpeech(text, 'alloy');
-      await playAudio(audioBase64);
-    } catch (error) {
-      console.error('Error playing response audio:', error);
-      toast({
-        title: "Audio Error",
-        description: "Could not play audio response.",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
     <div className="flex items-center space-x-3">
       <Button
@@ -105,8 +88,6 @@ export const StreamingVoiceChat = ({ onSpeechResult, isAudioMode, setIsAudioMode
     </div>
   );
 };
-
-export { playResponseAudio };
 
 // Export the playResponseAudio function separately for use in other components
 export const useStreamingVoiceResponse = () => {
