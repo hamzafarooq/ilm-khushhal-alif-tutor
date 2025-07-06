@@ -1,6 +1,6 @@
-
 import { useRef, useEffect } from "react";
 import { MessageWithSources } from "./MessageWithSources";
+import ReactMarkdown from 'react-markdown';
 
 interface Source {
   id: string;
@@ -23,14 +23,15 @@ interface MessageListProps {
   messages: Message[];
   currentResponse: string;
   isTyping: boolean;
+  streamingText?: string;
 }
 
-export const MessageList = ({ messages, currentResponse, isTyping }: MessageListProps) => {
+export const MessageList = ({ messages, currentResponse, isTyping, streamingText }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, currentResponse]);
+  }, [messages, currentResponse, streamingText]);
 
   return (
     <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -79,8 +80,24 @@ export const MessageList = ({ messages, currentResponse, isTyping }: MessageList
         </div>
       )}
 
+      {/* Show streaming text from voice chat */}
+      {streamingText && (
+        <div className="flex justify-start">
+          <div className="max-w-xs lg:max-w-md px-6 py-4 rounded-2xl bg-blue-50 text-gray-800 shadow-sm border border-blue-200">
+            <div className="flex items-start space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mt-1"></div>
+              <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-800 prose-li:text-gray-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded-lg prose-a:text-blue-600 hover:prose-a:text-blue-800">
+                <ReactMarkdown>
+                  {streamingText}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Typing indicator */}
-      {isTyping && !currentResponse && (
+      {isTyping && !currentResponse && !streamingText && (
         <div className="flex justify-start">
           <div className="bg-white text-gray-800 shadow-sm border px-6 py-4 rounded-2xl">
             <div className="flex space-x-1">

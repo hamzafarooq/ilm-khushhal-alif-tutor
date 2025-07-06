@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send, BookOpen, Calculator, Globe } from "lucide-react";
@@ -22,7 +23,7 @@ export const ChatbotDemo = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [streamingText, setStreamingText] = useState('');
-  const [streamingMessageIndex, setStreamingMessageIndex] = useState<number | null>(null);
+  const [currentStreamingMessage, setCurrentStreamingMessage] = useState('');
 
   const sampleQuestions = [
     { icon: <Calculator className="w-3 h-3" />, text: "Solve: 15 + 27" },
@@ -60,11 +61,12 @@ export const ChatbotDemo = () => {
       };
       setMessages(prev => [...prev, newMessage]);
       setStreamingText('');
-      setStreamingMessageIndex(null);
+      setCurrentStreamingMessage('');
       console.log('Added complete voice message to demo history:', text.substring(0, 100) + '...');
     } else if (!isComplete) {
       // Update the streaming text for real-time display
       setStreamingText(text);
+      setCurrentStreamingMessage(text);
     }
   };
 
@@ -81,19 +83,7 @@ export const ChatbotDemo = () => {
     const currentInput = input;
     setInput("");
     setIsTyping(true);
-
-    // Add a placeholder message that will be updated with streaming content
-    const placeholderMessage: Message = {
-      text: "",
-      isUser: false,
-      language: 'en'
-    };
-    
-    setMessages(prev => {
-      const newMessages = [...prev, placeholderMessage];
-      setStreamingMessageIndex(newMessages.length - 1);
-      return newMessages;
-    });
+    setCurrentStreamingMessage('');
 
     try {
       console.log('Sending message to ALIF Tutor:', currentInput);
@@ -136,25 +126,24 @@ export const ChatbotDemo = () => {
                 if (parsed.content) {
                   fullResponse += parsed.content;
                   
-                  // Update the streaming message in real-time
-                  if (streamingMessageIndex !== null) {
-                    setMessages(prev => {
-                      const newMessages = [...prev];
-                      if (newMessages[streamingMessageIndex]) {
-                        newMessages[streamingMessageIndex] = {
-                          ...newMessages[streamingMessageIndex],
-                          text: fullResponse
-                        };
-                      }
-                      return newMessages;
-                    });
-                  }
+                  // Update streaming text in real-time
+                  setCurrentStreamingMessage(fullResponse);
                 }
               } catch (e) {
                 console.log('Skipping invalid JSON:', data);
               }
             }
           }
+        }
+
+        // Add final complete message
+        if (fullResponse.trim()) {
+          const finalMessage: Message = {
+            text: fullResponse,
+            isUser: false,
+            language: 'en'
+          };
+          setMessages(prev => [...prev, finalMessage]);
         }
       }
 
@@ -163,22 +152,15 @@ export const ChatbotDemo = () => {
     } catch (error) {
       console.error('Error calling ALIF Tutor:', error);
       
-      // Update the placeholder message with error
-      if (streamingMessageIndex !== null) {
-        setMessages(prev => {
-          const newMessages = [...prev];
-          if (newMessages[streamingMessageIndex]) {
-            newMessages[streamingMessageIndex] = {
-              ...newMessages[streamingMessageIndex],
-              text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment."
-            };
-          }
-          return newMessages;
-        });
-      }
+      const errorMessage: Message = {
+        text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        isUser: false,
+        language: 'en'
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
-      setStreamingMessageIndex(null);
+      setCurrentStreamingMessage('');
     }
   };
 
@@ -217,23 +199,30 @@ export const ChatbotDemo = () => {
               {message.isUser ? (
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">
                   {message.text}
-                  {index === streamingMessageIndex && !message.text && (
-                    <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-1"></span>
-                  )}
                 </p>
               ) : (
                 <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-800 prose-li:text-gray-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded-lg prose-a:text-blue-600 hover:prose-a:text-blue-800">
                   <ReactMarkdown>
                     {message.text}
                   </ReactMarkdown>
-                  {index === streamingMessageIndex && !message.text && (
-                    <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-1"></span>
-                  )}
                 </div>
               )}
             </div>
           </div>
         ))}
+
+        {/* Show current streaming response */}
+        {currentStreamingMessage && (
+          <div className="flex justify-start">
+            <div className="max-w-xs px-4 py-2 rounded-2xl bg-white text-gray-800 shadow-sm border">
+              <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-800 prose-li:text-gray-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded-lg prose-a:text-blue-600 hover:prose-a:text-blue-800">
+                <ReactMarkdown>
+                  {currentStreamingMessage}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Show streaming text from voice chat */}
         {streamingText && (
@@ -251,7 +240,7 @@ export const ChatbotDemo = () => {
           </div>
         )}
         
-        {isTyping && streamingMessageIndex === null && (
+        {isTyping && !currentStreamingMessage && !streamingText && (
           <div className="flex justify-start">
             <div className="bg-white text-gray-800 shadow-sm border px-4 py-2 rounded-2xl">
               <div className="flex space-x-1">

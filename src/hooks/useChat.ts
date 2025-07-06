@@ -79,9 +79,9 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
   const handleStreamingText = async (text: string, isComplete: boolean) => {
     console.log('Streaming text in useChat:', { text: text.substring(0, 50) + '...', isComplete, fullLength: text.length });
     
-    // Always update the accumulated text for display
+    // Always update the streaming text for display
     setAccumulatedVoiceText(text);
-    setCurrentResponse(text);
+    setStreamingText(text);
     
     if (isComplete && text.trim()) {
       // Save the complete AI response to database with RAG enhancement
@@ -113,7 +113,6 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
       }
       
       // Clear streaming states
-      setCurrentResponse("");
       setStreamingText("");
       setAccumulatedVoiceText("");
     }
