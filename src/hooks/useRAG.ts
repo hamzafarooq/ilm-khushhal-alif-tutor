@@ -26,16 +26,6 @@ const mockKnowledgeBase = {
     page: 15,
     content: 'اردو میں فعل کی تین اقسام ہیں: ماضی، حال، اور مستقبل۔ فعل ماضی وہ ہے جو گزرے ہوئے وقت کا اظہار کرتا ہے۔'
   },
-  'islamic history': {
-    document: 'Islamic History Textbook.pdf',  
-    page: 42,
-    content: 'The golden age of Islam (8th-13th centuries) was marked by significant advances in science, mathematics, medicine, and philosophy. اسلام کا سنہری دور علم و فن کی ترقی کا زمانہ تھا۔'
-  },
-  'quran translation': {
-    document: 'Quran Translation & Commentary.pdf',
-    page: 127,
-    content: 'The Quran emphasizes the importance of knowledge and learning. "اقرأ" (Read) was the first word revealed, highlighting the significance of education in Islam.'
-  },
   'pakistani culture': {
     document: 'Pakistani Culture & Traditions.docx',
     page: 8,
@@ -56,8 +46,6 @@ export const useRAG = () => {
       const hasMatch = keywords.some(keyword => 
         queryLower.includes(keyword) || 
         queryLower.includes('grammar') && key.includes('grammar') ||
-        queryLower.includes('history') && key.includes('history') ||
-        queryLower.includes('quran') && key.includes('quran') ||
         queryLower.includes('culture') && key.includes('culture') ||
         queryLower.includes('pakistan') && key.includes('pakistani')
       );

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, Book, GraduationCap, X } from 'lucide-react';
@@ -26,22 +25,6 @@ export const DocumentUpload = ({ onDocumentsChange }: DocumentUploadProps) => {
       type: 'pdf',
       size: '2.3 MB',
       uploadDate: '2025-01-05',
-      status: 'ready'
-    },
-    {
-      id: '2',
-      name: 'Islamic History Textbook.pdf',
-      type: 'pdf',
-      size: '4.1 MB',
-      uploadDate: '2025-01-04',
-      status: 'ready'
-    },
-    {
-      id: '3',
-      name: 'Quran Translation & Commentary.pdf',
-      type: 'pdf',
-      size: '8.7 MB',
-      uploadDate: '2025-01-03',
       status: 'ready'
     },
     {
