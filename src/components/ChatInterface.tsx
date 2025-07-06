@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Send, BookOpen } from "lucide-react";
@@ -69,7 +68,7 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
         .single();
 
       if (error) throw error;
-      return data.id;
+      return data?.id || null;
     } catch (error) {
       console.error('Error creating thread:', error);
       return null;
