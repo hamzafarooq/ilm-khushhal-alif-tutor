@@ -41,8 +41,10 @@ export const ChatbotDemo = () => {
   };
 
   const handleStreamingText = (text: string, isComplete: boolean) => {
-    if (isComplete) {
-      // Add the complete message to the messages list
+    console.log('Streaming text update:', { text: text.substring(0, 50) + '...', isComplete });
+    
+    if (isComplete && text.trim()) {
+      // Add the complete message to the messages list and clear streaming
       const newMessage: Message = {
         text: text,
         isUser: false,
@@ -50,7 +52,8 @@ export const ChatbotDemo = () => {
       };
       setMessages(prev => [...prev, newMessage]);
       setStreamingText('');
-    } else {
+      console.log('Added complete message to history:', text.substring(0, 50) + '...');
+    } else if (!isComplete) {
       // Update the streaming text
       setStreamingText(text);
     }

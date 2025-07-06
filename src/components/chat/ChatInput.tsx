@@ -31,18 +31,19 @@ export const ChatInput = ({ input, setInput, onSend, isTyping, messages, onStrea
   };
 
   const handleVoiceMessage = (event: any) => {
-    console.log('Voice event received:', event);
+    console.log('Voice event received in ChatInput:', event);
     // Handle different types of voice events from OpenAI
     if (event.type === 'conversation.item.created' && event.item.content) {
       // Handle transcribed text or AI responses
       const content = event.item.content.find((c: any) => c.type === 'text');
       if (content && event.item.role === 'assistant') {
-        console.log('AI response:', content.text);
+        console.log('AI response received in ChatInput:', content.text);
       }
     }
   };
 
   const handleTextUpdate = (text: string, isComplete: boolean) => {
+    console.log('Text update in ChatInput:', { text: text.substring(0, 50) + '...', isComplete });
     onStreamingText?.(text, isComplete);
   };
 
