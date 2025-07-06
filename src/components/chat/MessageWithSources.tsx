@@ -1,4 +1,5 @@
 
+import ReactMarkdown from 'react-markdown';
 import { SourceAttribution } from '../SourceAttribution';
 
 interface Source {
@@ -54,9 +55,17 @@ export const MessageWithSources = ({ message }: MessageWithSourcesProps) => {
           : 'bg-white text-gray-800 shadow-sm border'
       }`}
     >
-      <p className="text-sm leading-relaxed whitespace-pre-wrap">
-        {renderTextWithLinks(message.content)}
-      </p>
+      {message.is_user ? (
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+          {renderTextWithLinks(message.content)}
+        </p>
+      ) : (
+        <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-800 prose-li:text-gray-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded-lg prose-a:text-blue-600 hover:prose-a:text-blue-800">
+          <ReactMarkdown>
+            {message.content}
+          </ReactMarkdown>
+        </div>
+      )}
       
       {!message.is_user && message.sources && (
         <SourceAttribution sources={message.sources} />

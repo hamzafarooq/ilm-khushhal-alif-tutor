@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send, BookOpen, Calculator, Globe } from "lucide-react";
 import { RealtimeVoiceChat } from "@/components/RealtimeVoiceChat";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   text: string;
@@ -214,12 +214,23 @@ export const ChatbotDemo = () => {
                 textAlign: message.language === 'ur' ? 'right' : 'left'
               }}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                {message.text}
-                {index === streamingMessageIndex && !message.text && (
-                  <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-1"></span>
-                )}
-              </p>
+              {message.isUser ? (
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {message.text}
+                  {index === streamingMessageIndex && !message.text && (
+                    <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-1"></span>
+                  )}
+                </p>
+              ) : (
+                <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-800 prose-li:text-gray-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded-lg prose-a:text-blue-600 hover:prose-a:text-blue-800">
+                  <ReactMarkdown>
+                    {message.text}
+                  </ReactMarkdown>
+                  {index === streamingMessageIndex && !message.text && (
+                    <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-1"></span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -230,7 +241,11 @@ export const ChatbotDemo = () => {
             <div className="max-w-xs px-4 py-2 rounded-2xl bg-blue-50 text-gray-800 shadow-sm border border-blue-200">
               <div className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mt-1"></div>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{streamingText}</p>
+                <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-800 prose-li:text-gray-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded-lg prose-a:text-blue-600 hover:prose-a:text-blue-800">
+                  <ReactMarkdown>
+                    {streamingText}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           </div>
