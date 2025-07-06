@@ -91,13 +91,23 @@ export const StreamingVoiceChat = ({ onSpeechResult, isAudioMode, setIsAudioMode
 
 // Export the playResponseAudio function separately for use in other components
 export const useStreamingVoiceResponse = () => {
+  const { playAudio } = useAudio();
+  const { toast } = useToast();
+
   const playResponseAudio = async (text: string) => {
     try {
+      console.log('Attempting to play audio for text:', text.substring(0, 50) + '...');
       const audioBase64 = await convertTextToSpeech(text, 'alloy');
-      const audio = new Audio(`data:audio/mp3;base64,${audioBase64}`);
-      await audio.play();
+      console.log('Successfully converted text to speech, playing audio...');
+      await playAudio(audioBase64);
+      console.log('Audio playback completed');
     } catch (error) {
       console.error('Error playing response audio:', error);
+      toast({
+        title: "Audio Error",
+        description: "Could not play audio. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
