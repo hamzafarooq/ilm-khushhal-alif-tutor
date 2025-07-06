@@ -12,7 +12,7 @@ interface Message {
 export const ChatbotDemo = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "السلام علیکم! I'm ALIF (الف), your AI tutor powered by Traversaal.ai. Ask me anything in English or Urdu!",
+      text: "السلام علیکم! I'm ALIF Tutor, powered by Traversaal.ai. Ask me anything in English or Urdu!",
       isUser: false,
       language: 'en'
     }
@@ -34,10 +34,18 @@ export const ChatbotDemo = () => {
     setInput("");
     setIsTyping(true);
 
+    // Add a placeholder message that will be updated with streaming content
+    const placeholderMessage: Message = {
+      text: "",
+      isUser: false,
+      language: 'en'
+    };
+    
+    setMessages(prev => [...prev, placeholderMessage]);
+
     try {
-      console.log('Sending message to ALIF:', currentInput);
+      console.log('Sending message to ALIF Tutor:', currentInput);
       
-      // Call the streaming chat function using fetch (same as ChatInterface)
       const response = await fetch(`https://tqrlxdvmpfjfugrwbspx.functions.supabase.co/chat`, {
         method: 'POST',
         headers: {
@@ -75,9 +83,21 @@ export const ChatbotDemo = () => {
                 const parsed = JSON.parse(data);
                 if (parsed.content) {
                   fullResponse += parsed.content;
+                  
+                  // Update the last message with streaming content
+                  setMessages(prev => {
+                    const newMessages = [...prev];
+                    const lastMessageIndex = newMessages.length - 1;
+                    if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
+                      newMessages[lastMessageIndex] = {
+                        ...newMessages[lastMessageIndex],
+                        text: fullResponse
+                      };
+                    }
+                    return newMessages;
+                  });
                 }
               } catch (e) {
-                // Skip invalid JSON
                 console.log('Skipping invalid JSON:', data);
               }
             }
@@ -85,25 +105,50 @@ export const ChatbotDemo = () => {
         }
       }
 
-      console.log('Received full response from ALIF:', fullResponse);
+      console.log('Received full response from ALIF Tutor:', fullResponse);
 
-      const aiMessage: Message = {
-        text: fullResponse || "Sorry, I couldn't process that. Please try again!",
-        isUser: false,
-        language: 'en'
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
+      // Final update to ensure we have the complete response
+      if (fullResponse) {
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const lastMessageIndex = newMessages.length - 1;
+          if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
+            newMessages[lastMessageIndex] = {
+              ...newMessages[lastMessageIndex],
+              text: fullResponse
+            };
+          }
+          return newMessages;
+        });
+      } else {
+        // If no response was received, update with error message
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const lastMessageIndex = newMessages.length - 1;
+          if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
+            newMessages[lastMessageIndex] = {
+              ...newMessages[lastMessageIndex],
+              text: "Sorry, I couldn't process that. Please try again!"
+            };
+          }
+          return newMessages;
+        });
+      }
     } catch (error) {
-      console.error('Error calling ALIF:', error);
+      console.error('Error calling ALIF Tutor:', error);
       
-      const errorMessage: Message = {
-        text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment.",
-        isUser: false,
-        language: 'en'
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
+      // Update the placeholder message with error
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastMessageIndex = newMessages.length - 1;
+        if (lastMessageIndex >= 0 && !newMessages[lastMessageIndex].isUser) {
+          newMessages[lastMessageIndex] = {
+            ...newMessages[lastMessageIndex],
+            text: "معذرت! Sorry, I'm having trouble connecting right now. Please try again in a moment."
+          };
+        }
+        return newMessages;
+      });
     } finally {
       setIsTyping(false);
     }
@@ -116,7 +161,7 @@ export const ChatbotDemo = () => {
           <MessageSquare className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900">ALIF Tutor (الف)</h3>
+          <h3 className="font-bold text-gray-900">ALIF Tutor</h3>
           <p className="text-xs text-gray-500">Powered by Traversaal.ai</p>
         </div>
         <div className="ml-auto">

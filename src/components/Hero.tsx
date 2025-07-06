@@ -42,23 +42,18 @@ export const Hero = () => {
         <div className="text-left">
           <div className="mb-8 inline-flex items-center px-6 py-3 bg-white/90 backdrop-blur-sm rounded-full text-amber-800 font-medium border border-amber-200/50 shadow-lg">
             <BookOpen className="w-5 h-5 mr-2" />
-            Powered by ALIF - The First Letter of Learning (الف) | Traversaal.ai
+            ALIF Tutor - Powered by Traversaal.ai
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
-            Learn Confidently.
+            Learn with 
             <span className="block bg-gradient-to-r from-amber-300 via-orange-300 to-yellow-300 bg-clip-text text-transparent">
-              Learn Locally.
+              ALIF Tutor
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white mb-4 max-w-2xl leading-relaxed font-medium drop-shadow-lg">
-            Meet ALIF - your AI tutor that speaks your language, understands your culture, and adapts to your learning style.
-          </p>
-          
-          <p className="text-lg text-amber-100 mb-8 max-w-2xl drop-shadow-md">
-            Starting with الف (Alif), the first letter of the Urdu alphabet, we're building the foundation 
-            for quality education across Pakistan. Empowering students with personalized learning in both English and Urdu.
+          <p className="text-xl md:text-2xl text-white mb-8 max-w-2xl leading-relaxed font-medium drop-shadow-lg">
+            Your AI tutor that speaks your language and understands your culture.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -80,8 +75,8 @@ export const Hero = () => {
           </div>
           
           <div className="text-sm text-white space-y-1 bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
-            <p>✨ No credit card required • Available 24/7 • Works on any device</p>
-            <p className="font-medium text-amber-200">اردو اور انگریزی میں دستیاب - Available in Urdu and English</p>
+            <p>✨ No credit card required • Available 24/7</p>
+            <p className="font-medium text-amber-200">اردو اور انگریزی میں دستیاب</p>
             <p className="text-xs text-amber-100 mt-2">Powered by Traversaal.ai • 2025</p>
           </div>
         </div>
