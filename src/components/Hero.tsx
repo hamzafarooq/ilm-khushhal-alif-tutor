@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -18,32 +19,42 @@ export const Hero = () => {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-amber-50 flex items-center justify-center px-4 relative overflow-hidden">
+    <section className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Hero Image */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/lovable-uploads/f7c634e7-8f5e-4b73-af4c-54e54f5e59b5.png" 
+          alt="Pakistani children running joyfully in golden sunset light"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-200/30 via-orange-100/40 to-yellow-200/30"></div>
+      </div>
+      
       {/* Decorative background elements */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-emerald-600 rounded-full"></div>
-        <div className="absolute bottom-20 right-20 w-24 h-24 bg-amber-500 rounded-full"></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-400 rounded-full"></div>
+      <div className="absolute inset-0 opacity-10 z-1">
+        <div className="absolute top-20 left-20 w-32 h-32 bg-amber-500 rounded-full"></div>
+        <div className="absolute bottom-20 right-20 w-24 h-24 bg-orange-400 rounded-full"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-500 rounded-full"></div>
       </div>
       
       <div className="max-w-6xl mx-auto text-center relative z-10">
-        <div className="mb-8 inline-flex items-center px-6 py-3 bg-emerald-100 rounded-full text-emerald-800 font-medium">
+        <div className="mb-8 inline-flex items-center px-6 py-3 bg-amber-100/80 backdrop-blur-sm rounded-full text-amber-800 font-medium border border-amber-200/50">
           <BookOpen className="w-5 h-5 mr-2" />
           Powered by ALIF - The First Letter of Learning (الف) | Traversaal.ai
         </div>
         
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
           Learn Confidently.
-          <span className="block bg-gradient-to-r from-emerald-600 to-amber-600 bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent">
             Learn Locally.
           </span>
         </h1>
         
-        <p className="text-xl md:text-2xl text-gray-700 mb-4 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl text-gray-800 mb-4 max-w-4xl mx-auto leading-relaxed font-medium">
           Meet ALIF - your AI tutor that speaks your language, understands your culture, and adapts to your learning style.
         </p>
         
-        <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
+        <p className="text-lg text-gray-700 mb-8 max-w-3xl mx-auto">
           Starting with الف (Alif), the first letter of the Urdu alphabet, we're building the foundation 
           for quality education across Pakistan. Empowering students with personalized learning in both English and Urdu.
         </p>
@@ -52,7 +63,7 @@ export const Hero = () => {
           <Button 
             size="lg" 
             onClick={handleTryFree}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border-0"
           >
             Try ALIF Tutor for Free
           </Button>
@@ -60,16 +71,16 @@ export const Hero = () => {
             variant="outline" 
             size="lg" 
             onClick={handleWatchDemo}
-            className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg font-semibold rounded-xl"
+            className="border-2 border-amber-500 text-amber-700 hover:bg-amber-50 bg-white/80 backdrop-blur-sm px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
           >
             Watch Demo
           </Button>
         </div>
         
-        <div className="text-sm text-gray-500 space-y-1">
+        <div className="text-sm text-gray-600 space-y-1 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-amber-200/30">
           <p>✨ No credit card required • Available 24/7 • Works on any device</p>
-          <p className="font-medium text-emerald-700">اردو اور انگریزی میں دستیاب - Available in Urdu and English</p>
-          <p className="text-xs text-gray-400 mt-2">Powered by Traversaal.ai • 2025</p>
+          <p className="font-medium text-amber-700">اردو اور انگریزی میں دستیاب - Available in Urdu and English</p>
+          <p className="text-xs text-gray-500 mt-2">Powered by Traversaal.ai • 2025</p>
         </div>
       </div>
     </section>
