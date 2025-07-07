@@ -71,16 +71,22 @@ export const callAlifAPI = async (message: string, includeSearch: boolean = fals
     console.log('Calling ALIF chat function with message:', message);
     
     let searchResults = null;
+    let searchSources = null;
     
     // Perform internet search if requested
     if (includeSearch) {
       console.log('Performing internet search...');
-      searchResults = await searchWithAres(message);
+      const aresResult = await searchWithAres(message);
+      if (aresResult) {
+        searchResults = aresResult.results;
+        searchSources = aresResult.sourceLinks || aresResult.sources;
+      }
     }
     
     const requestBody = {
       message,
-      searchResults: searchResults?.results || null
+      searchResults: searchResults || null,
+      searchSources: searchSources || null
     };
     
     const response = await fetch(`https://tqrlxdvmpfjfugrwbspx.functions.supabase.co/chat`, {

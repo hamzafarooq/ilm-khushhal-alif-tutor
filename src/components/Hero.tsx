@@ -52,11 +52,38 @@ export const Hero = () => {
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white mb-8 max-w-2xl leading-relaxed font-medium drop-shadow-lg">
-            Your AI tutor that speaks your language and understands your culture.
+          <p className="text-xl md:text-2xl text-white mb-6 max-w-2xl leading-relaxed font-medium drop-shadow-lg">
+            Your AI tutor that speaks your language and understands your culture. Better than ChatGPT for Pakistani students.
           </p>
+
+          {/* New advantages section */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/20 shadow-lg">
+            <h3 className="text-lg font-bold text-amber-200 mb-4">Why ALIF Tutor beats ChatGPT:</h3>
+            <div className="space-y-3 text-white">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🌐 <strong>Offline deployment</strong> - Works without internet, accessible to everyone</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🇵🇰 <strong>Cultural context</strong> - Understands Pakistani education system</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🔍 <strong>Real-time internet search</strong> - Always up-to-date information</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">📚 <strong>Document-based learning</strong> - Upload your textbooks for personalized help</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🎙️ <strong>Voice chat in Urdu</strong> - Natural conversation in your language</span>
+              </div>
+            </div>
+          </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <Button 
               size="lg" 
               onClick={handleTryFree}
@@ -75,7 +102,7 @@ export const Hero = () => {
           </div>
           
           <div className="text-sm text-white space-y-1 bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
-            <p>✨ No credit card required • Available 24/7</p>
+            <p>✨ No credit card required • Available 24/7 • Works offline</p>
             <p className="font-medium text-amber-200">اردو اور انگریزی میں دستیاب</p>
             <p className="text-xs text-amber-100 mt-2">Powered by Traversaal.ai • 2025</p>
           </div>

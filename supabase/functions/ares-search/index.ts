@@ -65,11 +65,26 @@ serve(async (req) => {
     const data = await response.json();
     console.log('ARES search successful');
 
+    // Extract response text and source links
+    const responseText = data?.data?.response_text || '';
+    const sourceLinks = data?.data?.sources || [];
+    
+    // Format source links for better display
+    const formattedSources = sourceLinks.map((source: any, index: number) => ({
+      id: `source-${index}`,
+      title: source.title || `Source ${index + 1}`,
+      url: source.url || source.link || '',
+      snippet: source.snippet || source.description || '',
+      relevanceScore: 0.9 - (index * 0.1) // Mock relevance score based on order
+    }));
+
     return new Response(
       JSON.stringify({
         query,
         results: data,
-        sources: data?.sources || []
+        sources: formattedSources,
+        responseText,
+        sourceLinks: formattedSources
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

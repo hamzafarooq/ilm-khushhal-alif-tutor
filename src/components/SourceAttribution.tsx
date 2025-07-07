@@ -1,12 +1,14 @@
 
-import { ExternalLink, Book, FileText } from 'lucide-react';
+import { ExternalLink, Book, FileText, Globe } from 'lucide-react';
 
 interface Source {
   id: string;
   title: string;
-  excerpt: string;
+  excerpt?: string;
+  snippet?: string;
   page?: number;
-  document: string;
+  document?: string;
+  url?: string;
   relevanceScore: number;
 }
 
@@ -17,10 +19,16 @@ interface SourceAttributionProps {
 export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
   if (!sources || sources.length === 0) return null;
 
+  const handleSourceClick = (url: string) => {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <div className="mt-4 pt-4 border-t border-gray-200">
       <div className="flex items-center space-x-2 mb-3">
-        <Book className="w-4 h-4 text-emerald-600" />
+        <Globe className="w-4 h-4 text-emerald-600" />
         <span className="text-sm font-medium text-gray-700">Sources</span>
       </div>
       
@@ -30,9 +38,9 @@ export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <FileText className="w-3 h-3 text-emerald-600" />
+                  {source.url ? <Globe className="w-3 h-3 text-emerald-600" /> : <FileText className="w-3 h-3 text-emerald-600" />}
                   <span className="text-xs font-medium text-emerald-800">
-                    {source.document}
+                    {source.document || source.title || `Source ${index + 1}`}
                     {source.page && ` - Page ${source.page}`}
                   </span>
                   <span className="text-xs bg-emerald-200 text-emerald-800 px-1 rounded">
@@ -40,10 +48,14 @@ export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">
-                  "{source.excerpt}"
+                  "{source.excerpt || source.snippet || 'Source information'}"
                 </p>
               </div>
-              <button className="ml-2 text-emerald-600 hover:text-emerald-800">
+              <button 
+                onClick={() => handleSourceClick(source.url || '')}
+                className="ml-2 text-emerald-600 hover:text-emerald-800"
+                disabled={!source.url}
+              >
                 <ExternalLink className="w-3 h-3" />
               </button>
             </div>
@@ -52,7 +64,7 @@ export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
       </div>
       
       <p className="text-xs text-gray-500 mt-2">
-        💡 Answers are generated using content from your uploaded documents
+        💡 {sources.some(s => s.url) ? 'Click the link icon to visit sources' : 'Answers are generated using content from your uploaded documents'}
       </p>
     </div>
   );

@@ -3,6 +3,12 @@ interface AresSearchResult {
   query: string;
   results: any[];
   sources?: string[];
+  responseText?: string;
+  sourceLinks?: Array<{
+    title: string;
+    url: string;
+    snippet?: string;
+  }>;
 }
 
 export const searchWithAres = async (query: string): Promise<AresSearchResult | null> => {
