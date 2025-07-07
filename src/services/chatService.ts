@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { searchWithAres } from "./aresService";
 
 interface Message {
   id: string;
@@ -65,9 +66,22 @@ export const saveMessage = async (threadId: string, content: string, isUser: boo
   }
 };
 
-export const callAlifAPI = async (message: string): Promise<ReadableStream | null> => {
+export const callAlifAPI = async (message: string, includeSearch: boolean = false): Promise<ReadableStream | null> => {
   try {
     console.log('Calling ALIF chat function with message:', message);
+    
+    let searchResults = null;
+    
+    // Perform internet search if requested
+    if (includeSearch) {
+      console.log('Performing internet search...');
+      searchResults = await searchWithAres(message);
+    }
+    
+    const requestBody = {
+      message,
+      searchResults: searchResults?.results || null
+    };
     
     const response = await fetch(`https://tqrlxdvmpfjfugrwbspx.functions.supabase.co/chat`, {
       method: 'POST',
@@ -75,7 +89,7 @@ export const callAlifAPI = async (message: string): Promise<ReadableStream | nul
         'Content-Type': 'application/json',
         'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxcmx4ZHZtcGZqZnVncndic3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3ODA0MTksImV4cCI6MjA2NzM1NjQxOX0.serTY0x1SYdNbe40omRovxcGhepPov1I9DPoH-pjlEY`,
       },
-      body: JSON.stringify({ message })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {

@@ -18,6 +18,8 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
     setInput, 
     isTyping, 
     currentResponse, 
+    useInternetSearch,
+    setUseInternetSearch,
     handleSend,
     handleVoiceMessage,
     handleStreamingText
@@ -48,6 +50,8 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
         onSend={handleSend}
         isTyping={isTyping}
         messages={messages}
+        useInternetSearch={useInternetSearch}
+        setUseInternetSearch={setUseInternetSearch}
         onStreamingText={handleStreamingText}
         onVoiceMessage={handleVoiceMessage}
       />

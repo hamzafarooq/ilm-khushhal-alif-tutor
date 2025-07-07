@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { loadMessages, createThread, saveMessage, callAlifAPI } from "@/services/chatService";
 import { useRAG } from "./useRAG";
@@ -27,6 +26,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
   const [currentResponse, setCurrentResponse] = useState("");
   const [streamingText, setStreamingText] = useState("");
   const [accumulatedVoiceText, setAccumulatedVoiceText] = useState("");
+  const [useInternetSearch, setUseInternetSearch] = useState(false);
   const { enhanceResponseWithRAG } = useRAG();
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
     }
   };
 
-  const handleSend = async () => {
+  const handleSend = async (withSearch: boolean = false) => {
     if (!input.trim()) return;
 
     const userMessage = input.trim();
@@ -145,7 +145,8 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
     }
 
     try {
-      const responseStream = await callAlifAPI(userMessage);
+      // Call ALIF API with or without search
+      const responseStream = await callAlifAPI(userMessage, withSearch || useInternetSearch);
       
       if (responseStream) {
         // Handle streaming response with real-time updates
@@ -214,6 +215,8 @@ export const useChat = (userId: string, threadId: string | null, onThreadCreated
     setInput,
     isTyping,
     currentResponse,
+    useInternetSearch,
+    setUseInternetSearch,
     handleSend,
     handleVoiceMessage,
     handleStreamingText
