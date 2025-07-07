@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -39,6 +39,16 @@ const grades = [
 export const SubjectSelection = ({ onSelectionComplete }: SubjectSelectionProps) => {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedGrade, setSelectedGrade] = useState<string>("");
+  const gradeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedSubject && gradeRef.current) {
+      gradeRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  }, [selectedSubject]);
 
   const handleStartLearning = () => {
     if (selectedSubject && selectedGrade) {
@@ -104,7 +114,7 @@ export const SubjectSelection = ({ onSelectionComplete }: SubjectSelectionProps)
           </Card>
 
           {/* Grade Selection */}
-          <Card>
+          <Card ref={gradeRef}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="w-5 h-5" />
