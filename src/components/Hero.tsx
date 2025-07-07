@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +41,7 @@ export const Hero = () => {
         <div className="text-left">
           <div className="mb-8 inline-flex items-center px-6 py-3 bg-white/90 backdrop-blur-sm rounded-full text-gray-800 font-medium border border-amber-200/50 shadow-lg">
             <BookOpen className="w-5 h-5 mr-2 text-amber-600" />
-            <span className="text-red-600 font-semibold">Powered by Traversaal.ai</span>
+            <span className="text-red-600 font-semibold">Powered by Traversaal.ai • Made possible by Meta Grant</span>
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
