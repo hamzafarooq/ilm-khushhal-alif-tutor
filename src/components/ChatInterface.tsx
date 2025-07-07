@@ -9,9 +9,17 @@ interface ChatInterfaceProps {
   userId: string;
   threadId: string | null;
   onThreadCreated: (threadId: string) => void;
+  selectedSubject?: string;
+  selectedGrade?: string;
 }
 
-export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfaceProps) => {
+export const ChatInterface = ({ 
+  userId, 
+  threadId, 
+  onThreadCreated, 
+  selectedSubject, 
+  selectedGrade 
+}: ChatInterfaceProps) => {
   const { 
     messages, 
     input, 
@@ -31,11 +39,13 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
 
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader />
+      <ChatHeader selectedSubject={selectedSubject} selectedGrade={selectedGrade} />
       
       <SampleQuestions 
         onQuestionSelect={handleSampleQuestionSelect}
         isVisible={messages.length === 0 && !currentResponse}
+        selectedSubject={selectedSubject}
+        selectedGrade={selectedGrade}
       />
       
       <MessageList 
@@ -54,6 +64,8 @@ export const ChatInterface = ({ userId, threadId, onThreadCreated }: ChatInterfa
         setUseInternetSearch={setUseInternetSearch}
         onStreamingText={handleStreamingText}
         onVoiceMessage={handleVoiceMessage}
+        selectedSubject={selectedSubject}
+        selectedGrade={selectedGrade}
       />
     </div>
   );

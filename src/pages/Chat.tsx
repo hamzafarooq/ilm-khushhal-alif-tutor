@@ -7,12 +7,16 @@ import { User } from "@supabase/supabase-js";
 import { ChatInterface } from "@/components/ChatInterface";
 import { ThreadSidebar } from "@/components/ThreadSidebar";
 import { KnowledgeBaseTab } from "@/components/KnowledgeBaseTab";
-import { LogOut, Plus, MessageSquare, BookOpen } from "lucide-react";
+import { SubjectSelection } from "@/components/SubjectSelection";
+import { LogOut, Plus, MessageSquare, BookOpen, ArrowLeft } from "lucide-react";
 
 const Chat = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'chat' | 'knowledge'>('chat');
+  const [showSubjectSelection, setShowSubjectSelection] = useState(true);
+  const [selectedSubject, setSelectedSubject] = useState<string>("");
+  const [selectedGrade, setSelectedGrade] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +51,19 @@ const Chat = () => {
 
   const handleNewThread = () => {
     setCurrentThreadId(null);
+    setShowSubjectSelection(true);
+    setSelectedSubject("");
+    setSelectedGrade("");
+  };
+
+  const handleSubjectSelection = (subject: string, grade: string) => {
+    setSelectedSubject(subject);
+    setSelectedGrade(grade);
+    setShowSubjectSelection(false);
+  };
+
+  const handleBackToSelection = () => {
+    setShowSubjectSelection(true);
   };
 
   if (!user) {
@@ -58,6 +75,11 @@ const Chat = () => {
         </div>
       </div>
     );
+  }
+
+  // Show subject selection screen
+  if (showSubjectSelection) {
+    return <SubjectSelection onSelectionComplete={handleSubjectSelection} />;
   }
 
   return (
@@ -80,6 +102,25 @@ const Chat = () => {
           <div className="text-sm text-gray-600 mb-4">
             السلام علیکم {user.user_metadata?.name || user.email}! 👋
           </div>
+
+          {/* Current Selection Display */}
+          {selectedSubject && selectedGrade && (
+            <div className="bg-emerald-50 p-3 rounded-lg mb-4 border border-emerald-200">
+              <div className="text-sm font-medium text-emerald-800 mb-1">Current Session:</div>
+              <div className="text-sm text-emerald-700">
+                {selectedSubject.charAt(0).toUpperCase() + selectedSubject.slice(1)} - {selectedGrade.charAt(0).toUpperCase() + selectedGrade.slice(1)}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBackToSelection}
+                className="mt-2 text-emerald-600 hover:text-emerald-800 p-0 h-auto"
+              >
+                <ArrowLeft className="w-3 h-3 mr-1" />
+                Change Subject
+              </Button>
+            </div>
+          )}
 
           {/* Tab Navigation */}
           <div className="flex space-x-2 mb-4">
@@ -130,6 +171,8 @@ const Chat = () => {
             userId={user.id}
             threadId={currentThreadId}
             onThreadCreated={setCurrentThreadId}
+            selectedSubject={selectedSubject}
+            selectedGrade={selectedGrade}
           />
         ) : (
           <KnowledgeBaseTab />
