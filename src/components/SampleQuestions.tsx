@@ -5,9 +5,11 @@ import { MessageSquare, BookOpen, Calculator, Globe } from "lucide-react";
 interface SampleQuestionsProps {
   onQuestionSelect: (question: string) => void;
   isVisible: boolean;
+  selectedSubject?: string;
+  selectedGrade?: string;
 }
 
-export const SampleQuestions = ({ onQuestionSelect, isVisible }: SampleQuestionsProps) => {
+export const SampleQuestions = ({ onQuestionSelect, isVisible, selectedSubject, selectedGrade }: SampleQuestionsProps) => {
   const sampleQuestions = [
     {
       icon: <Calculator className="w-4 h-4" />,

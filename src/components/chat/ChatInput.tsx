@@ -21,6 +21,8 @@ interface ChatInputProps {
   setUseInternetSearch?: (value: boolean) => void;
   onStreamingText?: (text: string, isComplete: boolean) => void;
   onVoiceMessage?: (event: any) => void;
+  selectedSubject?: string;
+  selectedGrade?: string;
 }
 
 export const ChatInput = ({ 
@@ -32,7 +34,9 @@ export const ChatInput = ({
   useInternetSearch = false,
   setUseInternetSearch,
   onStreamingText,
-  onVoiceMessage 
+  onVoiceMessage,
+  selectedSubject,
+  selectedGrade
 }: ChatInputProps) => {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
 
