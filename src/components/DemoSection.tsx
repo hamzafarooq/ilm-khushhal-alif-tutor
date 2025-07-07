@@ -16,7 +16,7 @@ export const DemoSection = () => {
           </p>
         </div>
         
-        <div className="grid lg:grid-cols-3 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h3 className="text-3xl font-bold text-gray-900 mb-6">
               Interactive. Bilingual. Always Learning.
@@ -63,15 +63,17 @@ export const DemoSection = () => {
             </div>
           </div>
           
-          <div className="flex justify-center">
-            <img 
-              src="/lovable-uploads/273ac8b5-bec1-4443-bf00-ed6c0a7aa7bc.png" 
-              alt="Pakistani child looking up with hope and curiosity"
-              className="rounded-2xl shadow-2xl max-w-sm w-full object-cover"
-            />
+          <div className="grid grid-cols-2 gap-6 items-start">
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/273ac8b5-bec1-4443-bf00-ed6c0a7aa7bc.png" 
+                alt="Pakistani child looking up with hope and curiosity"
+                className="rounded-2xl shadow-2xl max-w-full w-full object-cover"
+              />
+            </div>
+            
+            <ChatbotDemo />
           </div>
-          
-          <ChatbotDemo />
         </div>
       </div>
     </section>
