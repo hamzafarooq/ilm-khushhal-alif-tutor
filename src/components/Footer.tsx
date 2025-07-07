@@ -1,4 +1,3 @@
-
 export const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white py-16">
@@ -15,7 +14,7 @@ export const Footer = () => {
             <div className="text-sm text-gray-400 space-y-1">
               <p>🇵🇰 Made with love in Pakistan</p>
               <p>🌟 For Pakistani students, by Pakistani educators</p>
-              <p>⚡ Powered by Traversaal.ai • 2025</p>
+              <p>⚡ Powered by Traversaal.ai • Made possible by Meta Grant • 2025</p>
             </div>
           </div>
           
