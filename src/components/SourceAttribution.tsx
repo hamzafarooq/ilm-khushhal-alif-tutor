@@ -47,24 +47,36 @@ export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
                     {Math.round(source.relevanceScore * 100)}% match
                   </span>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-sm text-gray-700 leading-relaxed mb-2">
                   "{source.excerpt || source.snippet || 'Source information'}"
                 </p>
+                {source.url && (
+                  <a 
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline break-all font-medium"
+                  >
+                    🔗 {source.url}
+                  </a>
+                )}
               </div>
-              <button 
-                onClick={() => handleSourceClick(source.url || '')}
-                className="ml-2 text-emerald-600 hover:text-emerald-800"
-                disabled={!source.url}
-              >
-                <ExternalLink className="w-3 h-3" />
-              </button>
+              {source.url && (
+                <button 
+                  onClick={() => handleSourceClick(source.url || '')}
+                  className="ml-2 text-emerald-600 hover:text-emerald-800 p-1 rounded hover:bg-emerald-100 transition-colors"
+                  title="Open source link"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         ))}
       </div>
       
       <p className="text-xs text-gray-500 mt-2">
-        💡 {sources.some(s => s.url) ? 'Click the link icon to visit sources' : 'Answers are generated using content from your uploaded documents'}
+        💡 {sources.some(s => s.url) ? 'Click the link icon or blue links to visit sources' : 'Answers are generated using content from your uploaded documents'}
       </p>
     </div>
   );
