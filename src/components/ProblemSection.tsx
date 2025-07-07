@@ -13,7 +13,7 @@ export const ProblemSection = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
           <div className="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-red-500 hover:shadow-xl transition-shadow duration-300">
             <div className="text-4xl font-bold text-red-600 mb-4">22.8M</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Children Out of School</h3>
@@ -38,15 +38,6 @@ export const ProblemSection = () => {
             <p className="text-gray-600">
               Shortage of qualified teachers means students don't get the personalized 
               attention they need to truly understand and retain knowledge.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
-            <div className="text-4xl font-bold text-blue-600 mb-4">37%</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Limited Internet Access</h3>
-            <p className="text-gray-600">
-              Many students lack reliable internet connectivity, preventing them from 
-              accessing online educational resources and modern learning tools.
             </p>
           </div>
         </div>

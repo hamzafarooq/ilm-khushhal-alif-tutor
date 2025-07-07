@@ -47,26 +47,13 @@ export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
                     {Math.round(source.relevanceScore * 100)}% match
                   </span>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed mb-2">
+                <p className="text-sm text-gray-700 leading-relaxed">
                   "{source.excerpt || source.snippet || 'Source information'}"
                 </p>
-                {source.url && (
-                  <div className="flex items-center space-x-1">
-                    <Globe className="w-3 h-3 text-blue-600" />
-                    <a
-                      href={source.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all"
-                    >
-                      {source.url}
-                    </a>
-                  </div>
-                )}
               </div>
               <button 
                 onClick={() => handleSourceClick(source.url || '')}
-                className="ml-2 text-emerald-600 hover:text-emerald-800 shrink-0"
+                className="ml-2 text-emerald-600 hover:text-emerald-800"
                 disabled={!source.url}
               >
                 <ExternalLink className="w-3 h-3" />
@@ -77,7 +64,7 @@ export const SourceAttribution = ({ sources }: SourceAttributionProps) => {
       </div>
       
       <p className="text-xs text-gray-500 mt-2">
-        💡 {sources.some(s => s.url) ? 'Click the link icon or URL to visit sources' : 'Answers are generated using content from your uploaded documents'}
+        💡 {sources.some(s => s.url) ? 'Click the link icon to visit sources' : 'Answers are generated using content from your uploaded documents'}
       </p>
     </div>
   );

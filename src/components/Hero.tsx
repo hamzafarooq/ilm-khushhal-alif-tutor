@@ -19,51 +19,75 @@ export const Hero = () => {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-red-50 via-red-100 to-rose-50 flex items-center justify-center px-4 relative overflow-hidden">
+    <section className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Hero Image - More visible */}
       <div className="absolute inset-0 z-0">
         <img 
           src="/lovable-uploads/f7c634e7-8f5e-4b73-af4c-54e54f5e59b5.png" 
           alt="Pakistani children running joyfully in golden sunset light"
-          className="w-full h-full object-cover opacity-40"
+          className="w-full h-full object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-red-900/40 via-transparent to-rose-900/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-900/60 via-transparent to-orange-900/40"></div>
       </div>
       
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-10 z-1">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-red-500 rounded-full"></div>
-        <div className="absolute bottom-20 right-20 w-24 h-24 bg-rose-400 rounded-full"></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-red-600 rounded-full"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 bg-amber-500 rounded-full"></div>
+        <div className="absolute bottom-20 right-20 w-24 h-24 bg-orange-400 rounded-full"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-500 rounded-full"></div>
       </div>
       
       {/* Content positioned to the left side */}
       <div className="max-w-6xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         <div className="text-left">
-          <div className="mb-8 inline-flex items-center px-6 py-3 bg-white/90 backdrop-blur-sm rounded-full font-medium border border-red-200/50 shadow-lg">
-            <BookOpen className="w-5 h-5 mr-2 text-red-600" />
-            <span className="text-red-600">Powered by Traversaal.ai</span>
+          <div className="mb-8 inline-flex items-center px-6 py-3 bg-white/90 backdrop-blur-sm rounded-full text-amber-800 font-medium border border-amber-200/50 shadow-lg">
+            <BookOpen className="w-5 h-5 mr-2" />
+            ALIF Tutor - Powered by Traversaal.ai
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
             Learn with 
-            <span className="block bg-gradient-to-r from-red-300 via-rose-300 to-pink-300 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-amber-300 via-orange-300 to-yellow-300 bg-clip-text text-transparent">
               ALIF Tutor
-            </span>
-            <span className="block text-3xl md:text-4xl lg:text-5xl text-red-200 font-medium mt-2">
-              الف ٹیوٹر
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white mb-8 max-w-2xl leading-relaxed font-medium drop-shadow-lg">
+          <p className="text-xl md:text-2xl text-white mb-6 max-w-2xl leading-relaxed font-medium drop-shadow-lg">
             Your AI tutor that speaks your language and understands your culture. Better than ChatGPT for Pakistani students.
           </p>
+
+          {/* New advantages section */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/20 shadow-lg">
+            <h3 className="text-lg font-bold text-amber-200 mb-4">Why ALIF Tutor beats ChatGPT:</h3>
+            <div className="space-y-3 text-white">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🌐 <strong>Offline deployment</strong> - Works without internet, accessible to everyone</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🇵🇰 <strong>Cultural context</strong> - Understands Pakistani education system</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🔍 <strong>Real-time internet search</strong> - Always up-to-date information</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">📚 <strong>Document-based learning</strong> - Upload your textbooks for personalized help</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-sm">🎙️ <strong>Voice chat in Urdu</strong> - Natural conversation in your language</span>
+              </div>
+            </div>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <Button 
               size="lg" 
               onClick={handleTryFree}
-              className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border-0"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border-0"
             >
               Try ALIF Tutor for Free
             </Button>
@@ -71,7 +95,7 @@ export const Hero = () => {
               variant="outline" 
               size="lg" 
               onClick={handleWatchDemo}
-              className="border-2 border-white text-white hover:bg-white hover:text-red-700 bg-white/20 backdrop-blur-sm px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+              className="border-2 border-white text-white hover:bg-white hover:text-amber-700 bg-white/20 backdrop-blur-sm px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
             >
               Watch Demo
             </Button>
@@ -79,8 +103,8 @@ export const Hero = () => {
           
           <div className="text-sm text-white space-y-1 bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
             <p>✨ No credit card required • Available 24/7 • Works offline</p>
-            <p className="font-medium text-red-200">اردو اور انگریزی میں دستیاب</p>
-            <p className="text-xs text-red-100 mt-2">Powered by Traversaal.ai • 2025</p>
+            <p className="font-medium text-amber-200">اردو اور انگریزی میں دستیاب</p>
+            <p className="text-xs text-amber-100 mt-2">Powered by Traversaal.ai • 2025</p>
           </div>
         </div>
         
