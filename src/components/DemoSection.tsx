@@ -64,15 +64,17 @@ export const DemoSection = () => {
           </div>
           
           <div className="grid grid-cols-2 gap-6 items-center">
-            <div className="flex justify-center">
+            <div className="w-full">
               <img 
                 src="/lovable-uploads/273ac8b5-bec1-4443-bf00-ed6c0a7aa7bc.png" 
                 alt="Pakistani child looking up with hope and curiosity"
-                className="rounded-2xl shadow-2xl max-w-full w-full object-cover"
+                className="rounded-2xl shadow-2xl w-full object-cover"
               />
             </div>
             
-            <ChatbotDemo />
+            <div className="w-full">
+              <ChatbotDemo />
+            </div>
           </div>
         </div>
       </div>
