@@ -73,7 +73,7 @@ export const SubjectSelection = ({ onSelectionComplete }: SubjectSelectionProps)
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Subject Selection */}
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
@@ -114,7 +114,7 @@ export const SubjectSelection = ({ onSelectionComplete }: SubjectSelectionProps)
           </Card>
 
           {/* Grade Selection */}
-          <Card ref={gradeRef}>
+          <Card ref={gradeRef} className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="w-5 h-5" />
@@ -126,7 +126,7 @@ export const SubjectSelection = ({ onSelectionComplete }: SubjectSelectionProps)
             </CardHeader>
             <CardContent>
               <RadioGroup value={selectedGrade} onValueChange={setSelectedGrade}>
-                <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
+                <div className="grid grid-cols-1 gap-2">
                   {grades.map((grade) => (
                     <div key={grade.id}>
                       <RadioGroupItem
