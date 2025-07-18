@@ -89,11 +89,11 @@ export const callAlifAPI = async (message: string, includeSearch: boolean = fals
       searchSources: searchSources || null
     };
     
-    const response = await fetch(`https://${import.meta.env.VITE_PROJECT_ID}.functions.supabase.co/chat`, {
+    const response = await fetch(`https://tqrlxdvmpfjfugrwbspx.functions.supabase.co/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxcmx4ZHZtcGZqZnVncndic3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3ODA0MTksImV4cCI6MjA2NzM1NjQxOX0.serTY0x1SYdNbe40omRovxcGhepPov1I9DPoH-pjlEY`,
       },
       body: JSON.stringify(requestBody)
     });

@@ -15,11 +15,11 @@ export const searchWithAres = async (query: string): Promise<AresSearchResult | 
   try {
     console.log('Searching with ARES:', query);
     
-    const response = await fetch(`https://${import.meta.env.VITE_PROJECT_ID}.functions.supabase.co/ares-search`, {
+    const response = await fetch(`https://tqrlxdvmpfjfugrwbspx.functions.supabase.co/ares-search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxcmx4ZHZtcGZqZnVncndic3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3ODA0MTksImV4cCI6MjA2NzM1NjQxOX0.serTY0x1SYdNbe40omRovxcGhepPov1I9DPoH-pjlEY`,
       },
       body: JSON.stringify({ query })
     });
